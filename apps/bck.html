@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width">
+    <title>Corridor infini</title>
+    
+    <style>
+        /* ZONE DE JEU */
+        #game {
+            position: relative;
+            width: 256px;
+            height: 79px;
+            margin: 40px auto;
+            border: 2px solid black;
+            overflow: hidden;
+            background: #000;
+        }
+
+        /* COULOIR INFINI */
+        #corridor {
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            width: 512px;
+            height: 79px;
+            transition: transform 0.1s ease;
+        }
+
+        .mur-parent {
+            width: 256px;
+            height: 79px;
+            position: relative;
+            background-color: #fff;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        img {
+            image-rendering: pixelated;
+        }
+
+        /* PERSONNAGE */
+        #player {
+            position: absolute;
+            bottom: 0;
+            left: 120px;
+            width: 12px;
+            height: 20px;
+            background-image: url('sprite/cat.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            z-index: 10;
+            transition: left 0.1s linear;
+        }
+
+        @keyframes walk {
+            0%, 100% { background-image: url('sprite/catm1.png'); }
+            50% { background-image: url('sprite/catm2.png'); }
+        }
+
+        #player.walking {
+            animation: walk 0.4s steps(1) infinite;
+        }
+
+        /* CSS Figma */
+        .mur-icon{position:absolute;top:0px;left:0px;width:16px;height:47px;object-fit:cover;}
+        .mur-icon2{position:absolute;top:0px;left:16px;width:16px;height:47px;object-fit:cover;}
+        .mur-icon3{position:absolute;top:0px;left:32px;width:16px;height:47px;object-fit:cover;}
+        .mur-icon4{position:absolute;top:0px;left:48px;width:16px;height:47px;object-fit:cover;}
+        .mur-icon5{position:absolute;top:0px;left:64px;width:16px;height:47px;object-fit:cover;}
+        .mur-icon6{position:absolute;top:0px;left:80px;width:16px;height:47px;object-fit:cover;}
+        .mur-icon7{position:absolute;top:0px;left:96px;width:16px;height:47px;object-fit:cover;}
+        .mur-icon8{position:absolute;top:0px;left:112px;width:16px;height:47px;object-fit:cover;}
+        .mur-icon9{position:absolute;top:0px;left:128px;width:16px;height:47px;object-fit:cover;}
+        .mur-icon10{position:absolute;top:0px;left:144px;width:16px;height:47px;object-fit:cover;}
+        .mur-icon11{position:absolute;top:0px;left:160px;width:16px;height:47px;object-fit:cover;}
+        .mur-icon12{position:absolute;top:0px;left:176px;width:16px;height:47px;object-fit:cover;}
+        .mur-icon13{position:absolute;top:0px;left:192px;width:16px;height:47px;object-fit:cover;}
+        .mur-icon14{position:absolute;top:0px;left:208px;width:16px;height:47px;object-fit:cover;}
+        .mur-icon15{position:absolute;top:0px;left:224px;width:16px;height:47px;object-fit:cover;}
+        .mur-icon16{position:absolute;top:0px;left:240px;width:16px;height:47px;object-fit:cover;}
+
+        .sol-icon{position:absolute;top:47px;left:0px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon2{position:absolute;top:47px;left:16px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon3{position:absolute;top:47px;left:32px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon4{position:absolute;top:47px;left:48px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon5{position:absolute;top:47px;left:64px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon6{position:absolute;top:47px;left:80px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon7{position:absolute;top:47px;left:96px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon8{position:absolute;top:47px;left:112px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon9{position:absolute;top:47px;left:128px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon10{position:absolute;top:47px;left:144px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon11{position:absolute;top:47px;left:160px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon12{position:absolute;top:47px;left:176px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon13{position:absolute;top:47px;left:192px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon14{position:absolute;top:47px;left:208px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon15{position:absolute;top:47px;left:224px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon16{position:absolute;top:47px;left:240px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon17{position:absolute;top:63px;left:0px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon18{position:absolute;top:63px;left:16px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon19{position:absolute;top:63px;left:32px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon20{position:absolute;top:63px;left:48px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon21{position:absolute;top:63px;left:64px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon22{position:absolute;top:63px;left:80px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon23{position:absolute;top:63px;left:96px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon24{position:absolute;top:63px;left:112px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon25{position:absolute;top:63px;left:128px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon26{position:absolute;top:63px;left:144px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon27{position:absolute;top:63px;left:160px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon28{position:absolute;top:63px;left:176px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon29{position:absolute;top:63px;left:192px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon30{position:absolute;top:63px;left:208px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon31{position:absolute;top:63px;left:224px;width:16px;height:16px;object-fit:cover;}
+        .sol-icon32{position:absolute;top:63px;left:240px;width:16px;height:16px;object-fit:cover;}
+    </style>
+</head>
+<body>
+    <div id="game">
+        <div id="corridor">
+            <div class="mur-parent">
+                <img class="mur-icon" src="Untitled/mur.png" alt="">
+                <img class="mur-icon2" src="Untitled/mur.png" alt="">
+                <img class="mur-icon3" src="Untitled/mur.png" alt="">
+                <img class="mur-icon4" src="Untitled/mur.png" alt="">
+                <img class="mur-icon5" src="Untitled/mur.png" alt="">
+                <img class="mur-icon6" src="Untitled/mur.png" alt="">
+                <img class="mur-icon7" src="Untitled/mur.png" alt="">
+                <img class="mur-icon8" src="Untitled/mur.png" alt="">
+                <img class="mur-icon9" src="Untitled/mur.png" alt="">
+                <img class="mur-icon10" src="Untitled/mur.png" alt="">
+                <img class="mur-icon11" src="Untitled/mur.png" alt="">
+                <img class="mur-icon12" src="Untitled/mur.png" alt="">
+                <img class="mur-icon13" src="Untitled/mur.png" alt="">
+                <img class="mur-icon14" src="Untitled/mur.png" alt="">
+                <img class="mur-icon15" src="Untitled/mur.png" alt="">
+                <img class="mur-icon16" src="Untitled/mur.png" alt="">
+                <img class="sol-icon" src="Untitled/sol.png" alt="">
+                <img class="sol-icon2" src="Untitled/sol.png" alt="">
+                <img class="sol-icon3" src="Untitled/sol.png" alt="">
+                <img class="sol-icon4" src="Untitled/sol.png" alt="">
+                <img class="sol-icon5" src="Untitled/sol.png" alt="">
+                <img class="sol-icon6" src="Untitled/sol.png" alt="">
+                <img class="sol-icon7" src="Untitled/sol.png" alt="">
+                <img class="sol-icon8" src="Untitled/sol.png" alt="">
+                <img class="sol-icon9" src="Untitled/sol.png" alt="">
+                <img class="sol-icon10" src="Untitled/sol.png" alt="">
+                <img class="sol-icon11" src="Untitled/sol.png" alt="">
+                <img class="sol-icon12" src="Untitled/sol.png" alt="">
+                <img class="sol-icon13" src="Untitled/sol.png" alt="">
+                <img class="sol-icon14" src="Untitled/sol.png" alt="">
+                <img class="sol-icon15" src="Untitled/sol.png" alt="">
+                <img class="sol-icon16" src="Untitled/sol.png" alt="">
+                <img class="sol-icon17" src="Untitled/sol.png" alt="">
+                <img class="sol-icon18" src="Untitled/sol.png" alt="">
+                <img class="sol-icon19" src="Untitled/sol.png" alt="">
+                <img class="sol-icon20" src="Untitled/sol.png" alt="">
+                <img class="sol-icon21" src="Untitled/sol.png" alt="">
+                <img class="sol-icon22" src="Untitled/sol.png" alt="">
+                <img class="sol-icon23" src="Untitled/sol.png" alt="">
+                <img class="sol-icon24" src="Untitled/sol.png" alt="">
+                <img class="sol-icon25" src="Untitled/sol.png" alt="">
+                <img class="sol-icon26" src="Untitled/sol.png" alt="">
+                <img class="sol-icon27" src="Untitled/sol.png" alt="">
+                <img class="sol-icon28" src="Untitled/sol.png" alt="">
+                <img class="sol-icon29" src="Untitled/sol.png" alt="">
+                <img class="sol-icon30" src="Untitled/sol.png" alt="">
+                <img class="sol-icon31" src="Untitled/sol.png" alt="">
+                <img class="sol-icon32" src="Untitled/sol.png" alt="">
+            </div>
+
+            <div class="mur-parent">
+                <img class="mur-icon" src="Untitled/mur.png" alt="">
+                <img class="mur-icon2" src="Untitled/mur.png" alt="">
+                <img class="mur-icon3" src="Untitled/mur.png" alt="">
+                <img class="mur-icon4" src="Untitled/mur.png" alt="">
+                <img class="mur-icon5" src="Untitled/mur.png" alt="">
+                <img class="mur-icon6" src="Untitled/mur.png" alt="">
+                <img class="mur-icon7" src="Untitled/mur.png" alt="">
+                <img class="mur-icon8" src="Untitled/mur.png" alt="">
+                <img class="mur-icon9" src="Untitled/mur.png" alt="">
+                <img class="mur-icon10" src="Untitled/mur.png" alt="">
+                <img class="mur-icon11" src="Untitled/mur.png" alt="">
+                <img class="mur-icon12" src="Untitled/mur.png" alt="">
+                <img class="mur-icon13" src="Untitled/mur.png" alt="">
+                <img class="mur-icon14" src="Untitled/mur.png" alt="">
+                <img class="mur-icon15" src="Untitled/mur.png" alt="">
+                <img class="mur-icon16" src="Untitled/mur.png" alt="">
+                <img class="sol-icon" src="Untitled/sol.png" alt="">
+                <img class="sol-icon2" src="Untitled/sol.png" alt="">
+                <img class="sol-icon3" src="Untitled/sol.png" alt="">
+                <img class="sol-icon4" src="Untitled/sol.png" alt="">
+                <img class="sol-icon5" src="Untitled/sol.png" alt="">
+                <img class="sol-icon6" src="Untitled/sol.png" alt="">
+                <img class="sol-icon7" src="Untitled/sol.png" alt="">
+                <img class="sol-icon8" src="Untitled/sol.png" alt="">
+                <img class="sol-icon9" src="Untitled/sol.png" alt="">
+                <img class="sol-icon10" src="Untitled/sol.png" alt="">
+                <img class="sol-icon11" src="Untitled/sol.png" alt="">
+                <img class="sol-icon12" src="Untitled/sol.png" alt="">
+                <img class="sol-icon13" src="Untitled/sol.png" alt="">
+                <img class="sol-icon14" src="Untitled/sol.png" alt="">
+                <img class="sol-icon15" src="Untitled/sol.png" alt="">
+                <img class="sol-icon16" src="Untitled/sol.png" alt="">
+                <img class="sol-icon17" src="Untitled/sol.png" alt="">
+                <img class="sol-icon18" src="Untitled/sol.png" alt="">
+                <img class="sol-icon19" src="Untitled/sol.png" alt="">
+                <img class="sol-icon20" src="Untitled/sol.png" alt="">
+                <img class="sol-icon21" src="Untitled/sol.png" alt="">
+                <img class="sol-icon22" src="Untitled/sol.png" alt="">
+                <img class="sol-icon23" src="Untitled/sol.png" alt="">
+                <img class="sol-icon24" src="Untitled/sol.png" alt="">
+                <img class="sol-icon25" src="Untitled/sol.png" alt="">
+                <img class="sol-icon26" src="Untitled/sol.png" alt="">
+                <img class="sol-icon27" src="Untitled/sol.png" alt="">
+                <img class="sol-icon28" src="Untitled/sol.png" alt="">
+                <img class="sol-icon29" src="Untitled/sol.png" alt="">
+                <img class="sol-icon30" src="Untitled/sol.png" alt="">
+                <img class="sol-icon31" src="Untitled/sol.png" alt="">
+                <img class="sol-icon32" src="Untitled/sol.png" alt="">
+            </div>
+        </div>
+
+        <div id="player"></div>
+    </div>
+
+    <script>
+        const player = document.getElementById("player");
+        const corridor = document.getElementById("corridor");
+        const game = document.getElementById("game");
+
+        let playerX = 120;
+        let corridorX = 0;
+        const speed = 3;
+        const tileWidth = 256;
+
+        document.addEventListener("keydown", (e) => {
+            let moved = false;
+            
+            if (e.key === "ArrowLeft") {
+                playerX = Math.max(0, playerX - speed);
+                corridorX += speed;
+                moved = true;
+            }
+            
+            if (e.key === "ArrowRight") {
+                playerX = Math.min(game.clientWidth - player.clientWidth, playerX + speed);
+                corridorX -= speed;
+                moved = true;
+            }
+
+            if (moved) {
+                player.classList.add('walking');
+            }else{
+                player.classList.remove('walking');
+            }
+
+            if (corridorX <= -tileWidth) {
+                corridorX += tileWidth;
+            } else if (corridorX >= 0) {
+                corridorX -= tileWidth;
+            }
+
+            player.style.left = playerX + "px";
+            corridor.style.transform = `translateX(${corridorX}px)`;
+        });
+
+        document.addEventListener("click", () => document.body.focus());
+    </script>
+</body>
+</html>

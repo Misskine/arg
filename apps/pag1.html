@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Ouija Narratif - L'Esprit de DiabloX9</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background: radial-gradient(circle at center, #0a0a0a 0%, #020202 70%, #000000 100%);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Cinzel', serif;
+    color: #e6d3a3;
+    overflow: hidden;
+    position: relative;
+}
+
+body::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-image: 
+        radial-gradient(circle at 20% 30%, rgba(120, 60, 20, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(80, 40, 100, 0.1) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.ouija-container {
+    position: relative;
+    width: 95vw;
+    max-width: 1200px;
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+}
+
+.ouija-board {
+    width: 100%;
+    height: 70vh;
+    border-radius: 20px;
+    box-shadow: 
+        0 0 100px rgba(255, 120, 40, 0.3),
+        inset 0 0 60px rgba(0, 0, 0, 0.8);
+    border: 2px solid #5a3a20;
+    object-fit: cover;
+    position: relative;
+    z-index: 1;
+}
+
+.message-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 25%;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 15px;
+    border: 2px solid #8b4513;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-shadow: 0 0 40px rgba(255, 150, 50, 0.4);
+    z-index: 2;
+    backdrop-filter: blur(3px);
+}
+
+.message {
+    font-size: clamp(1.8rem, 3.5vw, 3rem);
+    letter-spacing: 0.2em;
+    text-shadow: 
+        0 0 15px rgba(255, 180, 70, 0.9),
+        0 0 30px rgba(255, 120, 40, 0.5);
+    text-align: center;
+    pointer-events: none;
+    font-weight: 700;
+    line-height: 1.4;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+#planchette {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    background: radial-gradient(circle, #f5e7c1 20%, #8b4513 70%);
+    border-radius: 50%;
+    box-shadow: 
+        0 0 40px rgba(255, 180, 70, 0.9),
+        0 0 20px rgba(255, 255, 255, 0.5) inset;
+    pointer-events: none;
+    transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 10;
+    border: 2px solid #d4a76a;
+}
+
+#planchette::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 15px;
+    height: 15px;
+    background: #ff4444;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #ff0000;
+}
+
+/* Zones invisibles */
+.zone {
+    position: absolute;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.3s;
+    z-index: 5;
+}
+.zone:hover {
+    background: rgba(255, 200, 120, 0.2);
+    box-shadow: 0 0 10px rgba(255, 200, 120, 0.3) inset;
+}
+
+.controls {
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    z-index: 3;
+}
+
+.control-btn {
+    background: rgba(90, 58, 32, 0.8);
+    border: 2px solid #8b4513;
+    color: #e6d3a3;
+    padding: 12px 25px;
+    border-radius: 10px;
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.control-btn:hover {
+    background: rgba(139, 69, 19, 0.9);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+}
+
+.control-btn i {
+    font-size: 1.2rem;
+}
+
+.story-indicator {
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid #8b4513;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    color: #d4a76a;
+    text-align: center;
+    z-index: 3;
+    box-shadow: 0 0 20px rgba(255, 150, 50, 0.3);
+    backdrop-filter: blur(5px);
+}
+
+.story-progress {
+    display: flex;
+    gap: 5px;
+    margin-top: 8px;
+    justify-content: center;
+}
+
+.progress-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(139, 69, 19, 0.5);
+    transition: background 0.3s;
+}
+
+.progress-dot.active {
+    background: #e6d3a3;
+    box-shadow: 0 0 8px #e6d3a3;
+}
+
+.ghost-effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1s;
+    z-index: 1;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(5deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.7; }
+}
+
+@keyframes ghostAppear {
+    0% { opacity: 0; transform: scale(0.8); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+.letter-highlight {
+    animation: pulse 0.5s ease-in-out;
+}
+
+.floating {
+    animation: float 3s ease-in-out infinite;
+}
+
+.typing {
+    display: inline-block;
+    position: relative;
+}
+
+.typing::after {
+    content: "|";
+    position: absolute;
+    right: -10px;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+@media (max-width: 768px) {
+    .ouija-container {
+        width: 98vw;
+        height: 95vh;
+    }
+    
+    .message {
+        font-size: clamp(1.4rem, 4vw, 2rem);
+        letter-spacing: 0.1em;
+    }
+    
+    .controls {
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 90%;
+    }
+    
+    .control-btn {
+        padding: 10px 15px;
+        font-size: 1rem;
+    }
+    
+    #planchette {
+        width: 60px;
+        height: 60px;
+    }
+}
+</style>
+</head>
+
+<body>
+<div class="ouija-container">
+    <img src="ouija-main.jpg" class="ouija-board" alt="Table de Ouija">
+    
+    <div class="message-container">
+        <div class="message" id="message"></div>
+    </div>
+    
+    <div id="planchette" class="floating"></div>
+    
+    <div class="story-indicator">
+        <div>Récit de l'Esprit</div>
+        <div class="story-progress" id="storyProgress"></div>
+    </div>
+    
+    <!-- Alphabet complet -->
+    <div id="lettersContainer"></div>
+    
+    <!-- Contrôles -->
+    <div class="controls">
+        <button class="control-btn" id="clearBtn"><i class="fas fa-eraser"></i> Effacer</button>
+        <button class="control-btn" id="hintBtn"><i class="fas fa-lightbulb"></i> Indice</button>
+        <button class="control-btn" id="randomBtn"><i class="fas fa-dice"></i> Aléatoire</button>
+        <button class="control-btn" id="autoBtn"><i class="fas fa-robot"></i> Auto-récit</button>
+    </div>
+</div>
+
+<script>
+const messageEl = document.getElementById('message');
+const planchette = document.getElementById('planchette');
+const lettersContainer = document.getElementById('lettersContainer');
+const clearBtn = document.getElementById('clearBtn');
+const hintBtn = document.getElementById('hintBtn');
+const randomBtn = document.getElementById('randomBtn');
+const autoBtn = document.getElementById('autoBtn');
+const storyProgress = document.getElementById('storyProgress');
+
+let texte = "";
+let locked = false;
+let storyStep = 0;
+let storyTriggers = [];
+let ghostMode = false;
+
+// Configuration des zones de lettres (positions approximatives)
+const letterPositions = [
+    // Première ligne (A-M)
+    {char:'A',top:'20%',left:'8%',w:'5%',h:'7%'},
+    {char:'B',top:'18%',left:'14%',w:'5%',h:'7%'},
+    {char:'C',top:'16%',left:'20%',w:'5%',h:'7%'},
+    {char:'D',top:'15%',left:'26%',w:'5%',h:'7%'},
+    {char:'E',top:'14%',left:'32%',w:'5%',h:'7%'},
+    {char:'F',top:'13%',left:'38%',w:'5%',h:'7%'},
+    {char:'G',top:'12%',left:'44%',w:'5%',h:'7%'},
+    {char:'H',top:'12%',left:'50%',w:'5%',h:'7%'},
+    {char:'I',top:'13%',left:'56%',w:'5%',h:'7%'},
+    {char:'J',top:'14%',left:'62%',w:'5%',h:'7%'},
+    {char:'K',top:'15%',left:'68%',w:'5%',h:'7%'},
+    {char:'L',top:'16%',left:'74%',w:'5%',h:'7%'},
+    {char:'M',top:'18%',left:'80%',w:'5%',h:'7%'},
+    
+    // Deuxième ligne (N-Z)
+    {char:'N',top:'28%',left:'10%',w:'5%',h:'7%'},
+    {char:'O',top:'26%',left:'16%',w:'5%',h:'7%'},
+    {char:'P',top:'24%',left:'22%',w:'5%',h:'7%'},
+    {char:'Q',top:'23%',left:'28%',w:'5%',h:'7%'},
+    {char:'R',top:'22%',left:'34%',w:'5%',h:'7%'},
+    {char:'S',top:'21%',left:'40%',w:'5%',h:'7%'},
+    {char:'T',top:'21%',left:'46%',w:'5%',h:'7%'},
+    {char:'U',top:'22%',left:'52%',w:'5%',h:'7%'},
+    {char:'V',top:'23%',left:'58%',w:'5%',h:'7%'},
+    {char:'W',top:'24%',left:'64%',w:'5%',h:'7%'},
+    {char:'X',top:'26%',left:'70%',w:'5%',h:'7%'},
+    {char:'Y',top:'28%',left:'76%',w:'5%',h:'7%'},
+    {char:'Z',top:'30%',left:'82%',w:'5%',h:'7%'},
+    
+    // Chiffres
+    {char:'0',top:'68%',left:'10%',w:'5%',h:'7%'},
+    {char:'1',top:'65%',left:'18%',w:'5%',h:'7%'},
+    {char:'2',top:'63%',left:'26%',w:'5%',h:'7%'},
+    {char:'3',top:'62%',left:'34%',w:'5%',h:'7%'},
+    {char:'4',top:'62%',left:'42%',w:'5%',h:'7%'},
+    {char:'5',top:'62%',left:'50%',w:'5%',h:'7%'},
+    {char:'6',top:'63%',left:'58%',w:'5%',h:'7%'},
+    {char:'7',top:'65%',left:'66%',w:'5%',h:'7%'},
+    {char:'8',top:'68%',left:'74%',w:'5%',h:'7%'},
+    {char:'9',top:'72%',left:'82%',w:'5%',h:'7%'},
+    
+    // Mots spéciaux
+    {char:'OUI',top:'40%',left:'5%',w:'8%',h:'10%'},
+    {char:'NON',top:'40%',left:'87%',w:'8%',h:'10%'},
+    {char:'BONJOUR',top:'55%',left:'5%',w:'12%',h:'10%'},
+    {char:'AU REVOIR',top:'55%',left:'83%',w:'12%',h:'10%'},
+    
+    // Contrôles
+    {char:' ',top:'80%',left:'35%',w:'10%',h:'8%'},
+    {char:'CLEAR',top:'80%',left:'55%',w:'10%',h:'8%'}
+];
+
+// Récit narratif
+const story = [
+    {
+        triggers: ["qui es tu", "qui est tu", "qui es-tu", "ton nom"],
+        response: "JE SUIS DIABLOX9. UN ESPRIT PERDU DANS LES OMBRES.",
+        nextTriggers: ["depuis quand", "depuis combien de temps", "âge"],
+        nextStep: 1
+    },
+    {
+        triggers: ["depuis quand", "depuis combien de temps", "âge", "combien de temps"],
+        response: "JE ERRRE DEPUIS DES SIECLES. DEPUIS LA NUIT DES TEMPS.",
+        nextTriggers: ["pourquoi", "cause", "raison"],
+        nextStep: 2
+    },
+    {
+        triggers: ["pourquoi", "cause", "raison", "pour quoi"],
+        response: "UNE MALEDICTION. J'AI TRAHI MA PROMESSE. MAINTENANT JE SUIS PRISONNIER.",
+        nextTriggers: ["malediction", "trahison", "promesse", "prisonnier"],
+        nextStep: 3
+    },
+    {
+        triggers: ["malediction", "trahison", "promesse", "prisonnier", "libere"],
+        response: "JE NE PEUX PARTIR. JE DOIS TROUVER LA CLE. LA CLE DU SANCTUAIRE OUBLIE.",
+        nextTriggers: ["cle", "sanctuaire", "oublie", "trouver"],
+        nextStep: 4
+    },
+    {
+        triggers: ["cle", "sanctuaire", "oublie", "trouver", "ou est"],
+        response: "LA CLE EST CACHEE SOUS LA PIERRE ANCIENNE. LA OU LES OMBRES DANSENT.",
+        nextTriggers: ["aide", "comment", "aide toi", "sauver"],
+        nextStep: 5
+    },
+    {
+        triggers: ["aide", "comment", "aide toi", "sauver", "liberer"],
+        response: "TU DOIS PRONONCER LES MOTS. LES TROIS MOTS ANCIENS. LES CONNAIS-TU?",
+        nextTriggers: ["mots", "anciens", "prononcer", "quels mots"],
+        nextStep: 6
+    },
+    {
+        triggers: ["mots", "anciens", "prononcer", "quels mots", "les trois"],
+        response: "VERITAS... LUMINA... ETERNUS... DIS LES A HAUTE VOIX.",
+        nextTriggers: ["veritas", "lumina", "eternus", "prononce"],
+        nextStep: 7
+    },
+    {
+        triggers: ["veritas", "lumina", "eternus", "prononce", "dit"],
+        response: "MERCI... JE SENS LA LUMIERE... JE PEUX ENFIN REPOSER... ADIEU...",
+        nextTriggers: ["adieu", "repos", "paix", "merci"],
+        nextStep: 8
+    }
+];
+
+// Initialisation
+function init() {
+    // Créer les zones de lettres
+    letterPositions.forEach(pos => {
+        const zone = document.createElement('div');
+        zone.className = 'zone';
+        zone.dataset.char = pos.char;
+        zone.style.cssText = `
+            top: ${pos.top};
+            left: ${pos.left};
+            width: ${pos.w};
+            height: ${pos.h};
+        `;
+        zone.title = pos.char;
+        lettersContainer.appendChild(zone);
+    });
+    
+    // Initialiser l'indicateur de progression
+    updateStoryProgress();
+    
+    // Afficher le message d'accueil
+    setTimeout(() => {
+        messageEl.textContent = "POSEZ VOTRE QUESTION...";
+        messageEl.classList.add('typing');
+    }, 1000);
+}
+
+// Mettre à jour la progression du récit
+function updateStoryProgress() {
+    storyProgress.innerHTML = '';
+    for (let i = 0; i < story.length; i++) {
+        const dot = document.createElement('div');
+        dot.className = `progress-dot ${i <= storyStep ? 'active' : ''}`;
+        storyProgress.appendChild(dot);
+    }
+}
+
+// Déplacer la planchette
+function movePlanchette(zone) {
+    const r = zone.getBoundingClientRect();
+    const b = document.querySelector('.ouija-container').getBoundingClientRect();
+    const x = r.left - b.left + r.width / 2 - planchette.offsetWidth / 2;
+    const y = r.top - b.top + r.height / 2 - planchette.offsetHeight / 2;
+    
+    planchette.style.transform = `translate(${x}px, ${y}px)`;
+    
+    // Effet visuel
+    planchette.classList.remove('floating');
+    setTimeout(() => planchette.classList.add('floating'), 800);
+}
+
+// Délai
+function sleep(ms) {
+    return new Promise(r => setTimeout(r, ms));
+}
+
+// Réponse de l'esprit avec effet de frappe
+async function reponseEsprit(reponse) {
+    locked = true;
+    messageEl.classList.remove('typing');
+    
+    // Effet fantomatique
+    document.body.style.background = 'radial-gradient(circle at center, #0a0a1a 0%, #020210 70%, #000015 100%)';
+    
+    // Efface le texte actuel lettre par lettre
+    while (texte.length > 0) {
+        await sleep(100);
+        texte = texte.slice(0, -1);
+        messageEl.textContent = texte;
+    }
+    
+    await sleep(1000);
+    
+    // Affiche la réponse lettre par lettre
+    for (const l of reponse) {
+        await sleep(70 + Math.random() * 50);
+        texte += l;
+        messageEl.textContent = texte;
+        messageEl.classList.add('letter-highlight');
+        setTimeout(() => messageEl.classList.remove('letter-highlight'), 300);
+    }
+    
+    messageEl.classList.add('typing');
+    
+    // Met à jour la progression
+    if (storyStep < story.length - 1) {
+        storyStep++;
+        updateStoryProgress();
+        storyTriggers = story[storyStep].nextTriggers || [];
+    }
+    
+    // Réinitialise l'arrière-plan
+    setTimeout(() => {
+        document.body.style.background = '';
+    }, 2000);
+    
+    locked = false;
+}
+
+// Vérifie les déclencheurs du récit
+function checkStoryTrigger(input) {
+    if (locked) return false;
+    
+    const normalise = input
+        .toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^\w\s]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    
+    // Vérifie les déclencheurs du step actuel
+    if (storyStep < story.length) {
+        const currentStory = story[storyStep];
+        for (const trigger of currentStory.triggers) {
+            if (normalise.includes(trigger)) {
+                return currentStory.response;
+            }
+        }
+    }
+    
+    // Réponses générales
+    const generalResponses = [
+        "JE NE COMPRENDS PAS... PARLE PLUS CLAIREMENT.",
+        "POSE UNE VRAIE QUESTION...",
+        "LES OMBRES CHUCHOTENT... MAIS JE N'ENTENDS PAS TA QUESTION.",
+        "UTILISE LES LETTRES... FORME TES MOTS...",
+        "LE TEMPS PRESSE... LES OMBRES APPROCHENT..."
+    ];
+    
+    // Si le texte est assez long mais pas reconnu
+    if (normalise.length > 15) {
+        return generalResponses[Math.floor(Math.random() * generalResponses.length)];
+    }
+    
+    return null;
+}
+
+// Génère un message aléatoire
+async function randomMessage() {
+    if (locked) return;
+    
+    const messages = [
+        "LES OMBRES DANSE",
+        "LA LUNE CHANTE",
+        "LE VENT PLEURE",
+        "LES MORTS PARLENT",
+        "L'ESPRIT VEILLE",
+        "LA NUIT REGNE",
+        "LE SILENCE CRIE",
+        "LES TENEBRES GRANDISSENT"
+    ];
+    
+    const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+    await reponseEsprit(randomMsg);
+}
+
+// Mode récit automatique
+async function autoStory() {
+    if (locked) return;
+    
+    locked = true;
+    messageEl.textContent = "L'ESPRIT RACONTE SON HISTOIRE...";
+    
+    for (let i = 0; i < story.length; i++) {
+        await sleep(3000);
+        await reponseEsprit(story[i].response);
+        await sleep(2000);
+    }
+    
+    locked = false;
+}
+
+// Donne un indice
+function giveHint() {
+    if (locked) return;
+    
+    const hints = [
+        "DEMANDE 'QUI ES TU' POUR COMMENCER",
+        "POSE DES QUESTIONS SUR SON PASSE",
+        "DEMANDE 'POURQUOI' ES-TU PRISONNIER",
+        "CHERCHE LA CLE POUR LE LIBERER",
+        "LES TROIS MOTS MAGIQUES SONT IMPORTANTS"
+    ];
+    
+    messageEl.textContent = hints[storyStep] || hints[0];
+    messageEl.classList.add('typing');
+}
+
+// Événements
+document.addEventListener('DOMContentLoaded', () => {
+    init();
+    
+    // Gestion des clics sur les zones
+    document.querySelectorAll('.zone').forEach(zone => {
+        zone.addEventListener('click', async () => {
+            if (locked) return;
+            
+            movePlanchette(zone);
+            const char = zone.dataset.char;
+            
+            if (char === "CLEAR") {
+                texte = "";
+            } else if (char === " ") {
+                texte += " ";
+            } else {
+                texte += char;
+            }
+            
+            messageEl.textContent = texte;
+            messageEl.classList.add('typing');
+            
+            // Vérifie si on déclenche une réponse
+            const response = checkStoryTrigger(texte);
+            if (response) {
+                await sleep(1500);
+                await reponseEsprit(response);
+            }
+        });
+    });
+    
+    // Boutons
+    clearBtn.addEventListener('click', () => {
+        texte = "";
+        messageEl.textContent = "POSEZ VOTRE QUESTION...";
+        messageEl.classList.add('typing');
+    });
+    
+    hintBtn.addEventListener('click', giveHint);
+    
+    randomBtn.addEventListener('click', randomMessage);
+    
+    autoBtn.addEventListener('click', autoStory);
+    
+    // Effet de saisie automatique pour démo
+    setTimeout(() => {
+        if (texte === "") {
+            const demoText = "QUI ES TU";
+            let i = 0;
+            const typeDemo = setInterval(() => {
+                if (i < demoText.length) {
+                    texte += demoText[i];
+                    messageEl.textContent = texte;
+                    i++;
+                } else {
+                    clearInterval(typeDemo);
+                    setTimeout(() => {
+                        reponseEsprit(story[0].response);
+                    }, 1000);
+                }
+            }, 200);
+        }
+    }, 3000);
+});
+</script>
+</body>
+</html>

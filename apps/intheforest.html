@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        #viewport {
+            width: 400px; height: 300px;
+            border: 2px solid black;
+            overflow: hidden;
+            position: relative;
+        }
+        #world {
+            width: 2000px; height: 2000px;
+            background: linear-gradient(green, blue);
+            position: absolute;
+        }
+        #player {
+            width: 20px; height: 20px;
+            background: red;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body>
+    <div id="viewport">
+        <div id="world">
+            <div id="player"></div>
+        </div>
+    </div>
+    
+    <script>
+        const world = document.getElementById('world');
+        const player = document.getElementById('player');
+        let px = 1000, py = 1000; // Position du joueur dans le monde
+        
+        // Positionner le joueur dans le monde
+        player.style.left = px + 'px';
+        player.style.top = py + 'px';
+        
+        // Fonction pour déplacer la caméra
+        function updateCamera() {
+            // Déplacer le monde pour que le joueur soit au centre
+            world.style.left = (200 - px) + 'px';
+            world.style.top = (150 - py) + 'px';
+        }
+        
+        // Déplacer avec les flèches
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') px += 10;
+            if (e.key === 'ArrowLeft') px -= 10;
+            if (e.key === 'ArrowDown') py += 10;
+            if (e.key === 'ArrowUp') py -= 10;
+            
+            player.style.left = px + 'px';
+            player.style.top = py + 'px';
+            updateCamera();
+        });
+        
+        updateCamera();
+    </script>
+</body>
+</html>
