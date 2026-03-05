@@ -63,7 +63,7 @@ $stmt->execute([$repo_id]);
 $issues = $stmt->fetchAll();
 
 // Récupérer l'application fonctionnelle si elle existe
-$stmt = $pdo->prepare("SELECT * FROM functional_apps WHERE repository_id = ?");
+$stmt = $pdo->prepare("SELECT * FROM arg_apps WHERE repository_id = ?");
 $stmt->execute([$repo_id]);
 $app = $stmt->fetch();
 
