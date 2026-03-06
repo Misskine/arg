@@ -41,6 +41,25 @@
             image-rendering: pixelated;
         }
 
+        /* EFFET DE PÉNOMBRE */
+        #darkness {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(
+                ellipse 100px 80px at var(--light-x, 126px) 40px,
+                rgba(0, 0, 0, 0) 0%,
+                rgba(0, 0, 0, 0.3) 40%,
+                rgba(0, 0, 0, 0.7) 70%,
+                rgba(0, 0, 0, 0.9) 100%
+            );
+            pointer-events: none;
+            z-index: 15;
+            transition: opacity 0.3s ease;
+        }
+
         /* PERSONNAGE */
         #player {
             position: absolute;
@@ -62,6 +81,29 @@
 
         #player.walking {
             animation: walk 0.4s steps(1) infinite;
+        }
+
+        /* CORBEAU */
+        #crow {
+            position: absolute;
+            bottom: 0;
+            left: -200px;
+            width: 100px;
+            height: 50px;
+            background-image: url('sprite/crow.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            z-index: 9;
+            transition: left 0.1s linear;
+        }
+
+        @keyframes crowWalk {
+            0%, 100% { background-image: url('sprite/crow_walk.png'); }
+            50% { background-image: url('sprite/crow_walking.png'); }
+        }
+
+        #crow.walking {
+            animation: crowWalk 0.4s steps(1) infinite;
         }
 
         /* CSS Figma */
@@ -120,120 +162,137 @@
     <div id="game">
         <div id="corridor">
             <div class="mur-parent">
-                <img class="mur-icon" src="Untitled/mur.png" alt="">
-                <img class="mur-icon2" src="Untitled/mur.png" alt="">
-                <img class="mur-icon3" src="Untitled/mur.png" alt="">
-                <img class="mur-icon4" src="Untitled/mur.png" alt="">
-                <img class="mur-icon5" src="Untitled/mur.png" alt="">
-                <img class="mur-icon6" src="Untitled/mur.png" alt="">
-                <img class="mur-icon7" src="Untitled/mur.png" alt="">
-                <img class="mur-icon8" src="Untitled/mur.png" alt="">
-                <img class="mur-icon9" src="Untitled/mur.png" alt="">
-                <img class="mur-icon10" src="Untitled/mur.png" alt="">
-                <img class="mur-icon11" src="Untitled/mur.png" alt="">
-                <img class="mur-icon12" src="Untitled/mur.png" alt="">
-                <img class="mur-icon13" src="Untitled/mur.png" alt="">
-                <img class="mur-icon14" src="Untitled/mur.png" alt="">
-                <img class="mur-icon15" src="Untitled/mur.png" alt="">
-                <img class="mur-icon16" src="Untitled/mur.png" alt="">
-                <img class="sol-icon" src="Untitled/sol.png" alt="">
-                <img class="sol-icon2" src="Untitled/sol.png" alt="">
-                <img class="sol-icon3" src="Untitled/sol.png" alt="">
-                <img class="sol-icon4" src="Untitled/sol.png" alt="">
-                <img class="sol-icon5" src="Untitled/sol.png" alt="">
-                <img class="sol-icon6" src="Untitled/sol.png" alt="">
-                <img class="sol-icon7" src="Untitled/sol.png" alt="">
-                <img class="sol-icon8" src="Untitled/sol.png" alt="">
-                <img class="sol-icon9" src="Untitled/sol.png" alt="">
-                <img class="sol-icon10" src="Untitled/sol.png" alt="">
-                <img class="sol-icon11" src="Untitled/sol.png" alt="">
-                <img class="sol-icon12" src="Untitled/sol.png" alt="">
-                <img class="sol-icon13" src="Untitled/sol.png" alt="">
-                <img class="sol-icon14" src="Untitled/sol.png" alt="">
-                <img class="sol-icon15" src="Untitled/sol.png" alt="">
-                <img class="sol-icon16" src="Untitled/sol.png" alt="">
-                <img class="sol-icon17" src="Untitled/sol.png" alt="">
-                <img class="sol-icon18" src="Untitled/sol.png" alt="">
-                <img class="sol-icon19" src="Untitled/sol.png" alt="">
-                <img class="sol-icon20" src="Untitled/sol.png" alt="">
-                <img class="sol-icon21" src="Untitled/sol.png" alt="">
-                <img class="sol-icon22" src="Untitled/sol.png" alt="">
-                <img class="sol-icon23" src="Untitled/sol.png" alt="">
-                <img class="sol-icon24" src="Untitled/sol.png" alt="">
-                <img class="sol-icon25" src="Untitled/sol.png" alt="">
-                <img class="sol-icon26" src="Untitled/sol.png" alt="">
-                <img class="sol-icon27" src="Untitled/sol.png" alt="">
-                <img class="sol-icon28" src="Untitled/sol.png" alt="">
-                <img class="sol-icon29" src="Untitled/sol.png" alt="">
-                <img class="sol-icon30" src="Untitled/sol.png" alt="">
-                <img class="sol-icon31" src="Untitled/sol.png" alt="">
-                <img class="sol-icon32" src="Untitled/sol.png" alt="">
+                <img class="mur-icon" src="furniture/mur.png" alt="">
+                <img class="mur-icon2" src="furniture/mur.png" alt="">
+                <img class="mur-icon3" src="furniture/mur.png" alt="">
+                <img class="mur-icon4" src="furniture/mur.png" alt="">
+                <img class="mur-icon5" src="furniture/mur.png" alt="">
+                <img class="mur-icon6" src="furniture/mur.png" alt="">
+                <img class="mur-icon7" src="furniture/mur.png" alt="">
+                <img class="mur-icon8" src="furniture/mur.png" alt="">
+                <img class="mur-icon9" src="furniture/mur.png" alt="">
+                <img class="mur-icon10" src="furniture/mur.png" alt="">
+                <img class="mur-icon11" src="furniture/mur.png" alt="">
+                <img class="mur-icon12" src="furniture/mur.png" alt="">
+                <img class="mur-icon13" src="furniture/mur.png" alt="">
+                <img class="mur-icon14" src="furniture/mur.png" alt="">
+                <img class="mur-icon15" src="furniture/mur.png" alt="">
+                <img class="mur-icon16" src="furniture/mur.png" alt="">
+                <img class="sol-icon" src="furniture/sol.png" alt="">
+                <img class="sol-icon2" src="furniture/sol.png" alt="">
+                <img class="sol-icon3" src="furniture/sol.png" alt="">
+                <img class="sol-icon4" src="furniture/sol.png" alt="">
+                <img class="sol-icon5" src="furniture/sol.png" alt="">
+                <img class="sol-icon6" src="furniture/sol.png" alt="">
+                <img class="sol-icon7" src="furniture/sol.png" alt="">
+                <img class="sol-icon8" src="furniture/sol.png" alt="">
+                <img class="sol-icon9" src="furniture/sol.png" alt="">
+                <img class="sol-icon10" src="furniture/sol.png" alt="">
+                <img class="sol-icon11" src="furniture/sol.png" alt="">
+                <img class="sol-icon12" src="furniture/sol.png" alt="">
+                <img class="sol-icon13" src="furniture/sol.png" alt="">
+                <img class="sol-icon14" src="furniture/sol.png" alt="">
+                <img class="sol-icon15" src="furniture/sol.png" alt="">
+                <img class="sol-icon16" src="furniture/sol.png" alt="">
+                <img class="sol-icon17" src="furniture/sol.png" alt="">
+                <img class="sol-icon18" src="furniture/sol.png" alt="">
+                <img class="sol-icon19" src="furniture/sol.png" alt="">
+                <img class="sol-icon20" src="furniture/sol.png" alt="">
+                <img class="sol-icon21" src="furniture/sol.png" alt="">
+                <img class="sol-icon22" src="furniture/sol.png" alt="">
+                <img class="sol-icon23" src="furniture/sol.png" alt="">
+                <img class="sol-icon24" src="furniture/sol.png" alt="">
+                <img class="sol-icon25" src="furniture/sol.png" alt="">
+                <img class="sol-icon26" src="furniture/sol.png" alt="">
+                <img class="sol-icon27" src="furniture/sol.png" alt="">
+                <img class="sol-icon28" src="furniture/sol.png" alt="">
+                <img class="sol-icon29" src="furniture/sol.png" alt="">
+                <img class="sol-icon30" src="furniture/sol.png" alt="">
+                <img class="sol-icon31" src="furniture/sol.png" alt="">
+                <img class="sol-icon32" src="furniture/sol.png" alt="">
             </div>
 
             <div class="mur-parent">
-                <img class="mur-icon" src="Untitled/mur.png" alt="">
-                <img class="mur-icon2" src="Untitled/mur.png" alt="">
-                <img class="mur-icon3" src="Untitled/mur.png" alt="">
-                <img class="mur-icon4" src="Untitled/mur.png" alt="">
-                <img class="mur-icon5" src="Untitled/mur.png" alt="">
-                <img class="mur-icon6" src="Untitled/mur.png" alt="">
-                <img class="mur-icon7" src="Untitled/mur.png" alt="">
-                <img class="mur-icon8" src="Untitled/mur.png" alt="">
-                <img class="mur-icon9" src="Untitled/mur.png" alt="">
-                <img class="mur-icon10" src="Untitled/mur.png" alt="">
-                <img class="mur-icon11" src="Untitled/mur.png" alt="">
-                <img class="mur-icon12" src="Untitled/mur.png" alt="">
-                <img class="mur-icon13" src="Untitled/mur.png" alt="">
-                <img class="mur-icon14" src="Untitled/mur.png" alt="">
-                <img class="mur-icon15" src="Untitled/mur.png" alt="">
-                <img class="mur-icon16" src="Untitled/mur.png" alt="">
-                <img class="sol-icon" src="Untitled/sol.png" alt="">
-                <img class="sol-icon2" src="Untitled/sol.png" alt="">
-                <img class="sol-icon3" src="Untitled/sol.png" alt="">
-                <img class="sol-icon4" src="Untitled/sol.png" alt="">
-                <img class="sol-icon5" src="Untitled/sol.png" alt="">
-                <img class="sol-icon6" src="Untitled/sol.png" alt="">
-                <img class="sol-icon7" src="Untitled/sol.png" alt="">
-                <img class="sol-icon8" src="Untitled/sol.png" alt="">
-                <img class="sol-icon9" src="Untitled/sol.png" alt="">
-                <img class="sol-icon10" src="Untitled/sol.png" alt="">
-                <img class="sol-icon11" src="Untitled/sol.png" alt="">
-                <img class="sol-icon12" src="Untitled/sol.png" alt="">
-                <img class="sol-icon13" src="Untitled/sol.png" alt="">
-                <img class="sol-icon14" src="Untitled/sol.png" alt="">
-                <img class="sol-icon15" src="Untitled/sol.png" alt="">
-                <img class="sol-icon16" src="Untitled/sol.png" alt="">
-                <img class="sol-icon17" src="Untitled/sol.png" alt="">
-                <img class="sol-icon18" src="Untitled/sol.png" alt="">
-                <img class="sol-icon19" src="Untitled/sol.png" alt="">
-                <img class="sol-icon20" src="Untitled/sol.png" alt="">
-                <img class="sol-icon21" src="Untitled/sol.png" alt="">
-                <img class="sol-icon22" src="Untitled/sol.png" alt="">
-                <img class="sol-icon23" src="Untitled/sol.png" alt="">
-                <img class="sol-icon24" src="Untitled/sol.png" alt="">
-                <img class="sol-icon25" src="Untitled/sol.png" alt="">
-                <img class="sol-icon26" src="Untitled/sol.png" alt="">
-                <img class="sol-icon27" src="Untitled/sol.png" alt="">
-                <img class="sol-icon28" src="Untitled/sol.png" alt="">
-                <img class="sol-icon29" src="Untitled/sol.png" alt="">
-                <img class="sol-icon30" src="Untitled/sol.png" alt="">
-                <img class="sol-icon31" src="Untitled/sol.png" alt="">
-                <img class="sol-icon32" src="Untitled/sol.png" alt="">
+                <img class="mur-icon" src="furniture/mur.png" alt="">
+                <img class="mur-icon2" src="furniture/mur.png" alt="">
+                <img class="mur-icon3" src="furniture/mur.png" alt="">
+                <img class="mur-icon4" src="furniture/mur.png" alt="">
+                <img class="mur-icon5" src="furniture/mur.png" alt="">
+                <img class="mur-icon6" src="furniture/mur.png" alt="">
+                <img class="mur-icon7" src="furniture/mur.png" alt="">
+                <img class="mur-icon8" src="furniture/mur.png" alt="">
+                <img class="mur-icon9" src="furniture/mur.png" alt="">
+                <img class="mur-icon10" src="furniture/mur.png" alt="">
+                <img class="mur-icon11" src="furniture/mur.png" alt="">
+                <img class="mur-icon12" src="furniture/mur.png" alt="">
+                <img class="mur-icon13" src="furniture/mur.png" alt="">
+                <img class="mur-icon14" src="furniture/mur.png" alt="">
+                <img class="mur-icon15" src="furniture/mur.png" alt="">
+                <img class="mur-icon16" src="furniture/mur.png" alt="">
+                <img class="sol-icon" src="furniture/sol.png" alt="">
+                <img class="sol-icon2" src="furniture/sol.png" alt="">
+                <img class="sol-icon3" src="furniture/sol.png" alt="">
+                <img class="sol-icon4" src="furniture/sol.png" alt="">
+                <img class="sol-icon5" src="furniture/sol.png" alt="">
+                <img class="sol-icon6" src="furniture/sol.png" alt="">
+                <img class="sol-icon7" src="furniture/sol.png" alt="">
+                <img class="sol-icon8" src="furniture/sol.png" alt="">
+                <img class="sol-icon9" src="furniture/sol.png" alt="">
+                <img class="sol-icon10" src="furniture/sol.png" alt="">
+                <img class="sol-icon11" src="furniture/sol.png" alt="">
+                <img class="sol-icon12" src="furniture/sol.png" alt="">
+                <img class="sol-icon13" src="furniture/sol.png" alt="">
+                <img class="sol-icon14" src="furniture/sol.png" alt="">
+                <img class="sol-icon15" src="furniture/sol.png" alt="">
+                <img class="sol-icon16" src="furniture/sol.png" alt="">
+                <img class="sol-icon17" src="furniture/sol.png" alt="">
+                <img class="sol-icon18" src="furniture/sol.png" alt="">
+                <img class="sol-icon19" src="furniture/sol.png" alt="">
+                <img class="sol-icon20" src="furniture/sol.png" alt="">
+                <img class="sol-icon21" src="furniture/sol.png" alt="">
+                <img class="sol-icon22" src="furniture/sol.png" alt="">
+                <img class="sol-icon23" src="furniture/sol.png" alt="">
+                <img class="sol-icon24" src="furniture/sol.png" alt="">
+                <img class="sol-icon25" src="furniture/sol.png" alt="">
+                <img class="sol-icon26" src="furniture/sol.png" alt="">
+                <img class="sol-icon27" src="furniture/sol.png" alt="">
+                <img class="sol-icon28" src="furniture/sol.png" alt="">
+                <img class="sol-icon29" src="furniture/sol.png" alt="">
+                <img class="sol-icon30" src="furniture/sol.png" alt="">
+                <img class="sol-icon31" src="furniture/sol.png" alt="">
+                <img class="sol-icon32" src="furniture/sol.png" alt="">
             </div>
         </div>
 
+        <div id="crow"></div>
         <div id="player"></div>
+        <div id="darkness"></div>
     </div>
 
     <script>
         const player = document.getElementById("player");
+        const crow = document.getElementById("crow");
         const corridor = document.getElementById("corridor");
         const game = document.getElementById("game");
+        const darkness = document.getElementById("darkness");
 
         let playerX = 120;
+        let crowX = -300;
         let corridorX = 0;
+        let totalDistance = 0;
         const speed = 3;
+        const crowSpeed = 1;
         const tileWidth = 256;
+        const distanceToMaintain = 150;
+
+        function updateDarkness() {
+            const darknessLevel = Math.min(totalDistance / 1000, 1);
+            darkness.style.opacity = darknessLevel;
+            
+            // Centre la lumière sur le chat (position + moitié de la largeur du chat)
+            const lightX = playerX + 6;
+            darkness.style.setProperty('--light-x', `${lightX}px`);
+        }
 
         document.addEventListener("keydown", (e) => {
             let moved = false;
@@ -247,13 +306,28 @@
             if (e.key === "ArrowRight") {
                 playerX = Math.min(game.clientWidth - player.clientWidth, playerX + speed);
                 corridorX -= speed;
+                totalDistance += speed;
                 moved = true;
             }
 
             if (moved) {
                 player.classList.add('walking');
-            }else{
+                crow.classList.add('walking');
+                
+                const distance = playerX - crowX;
+                if (Math.abs(distance) > distanceToMaintain) {
+                    if (distance > 0) {
+                        crowX += crowSpeed;
+                    } else {
+                        crowX -= crowSpeed;
+                    }
+                }
+                
+                crow.style.left = crowX + "px";
+                updateDarkness();
+            } else {
                 player.classList.remove('walking');
+                crow.classList.remove('walking');
             }
 
             if (corridorX <= -tileWidth) {
@@ -265,6 +339,16 @@
             player.style.left = playerX + "px";
             corridor.style.transform = `translateX(${corridorX}px)`;
         });
+
+        document.addEventListener("keyup", (e) => {
+            if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+                player.classList.remove('walking');
+                crow.classList.remove('walking');
+            }
+        });
+
+        // Initialiser la position de la lumière
+        updateDarkness();
 
         document.addEventListener("click", () => document.body.focus());
     </script>
