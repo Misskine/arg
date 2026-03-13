@@ -7,6 +7,7 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+check_session_timeout();
 $repo_id = $_GET['id'] ?? 0;
 
 // Récupérer le repository
@@ -245,7 +246,7 @@ $current_user = $stmt->fetch();
         <input type="text" class="search-input" placeholder="Search or jump to..." onclick="window.location.href='search.php'">
         <nav>
             <a href="dashboard.php">Dashboard</a>
-            <a href="profile.php"><?php echo htmlspecialchars($current_user['username']); ?></a>
+            <a href="profile.php?user=<?php echo urlencode($current_user['username']); ?>"><?php echo htmlspecialchars($current_user['username']); ?></a>
         </nav>
     </header>
     
@@ -266,26 +267,6 @@ $current_user = $stmt->fetch();
             <a href="#issues">Issues (<?php echo count($issues); ?>)</a>
             <a href="#commits">Commits (<?php echo count($commits); ?>)</a>
         </div>
-        
-        <?php if ($app): ?>
-            <a href="apps/<?php echo htmlspecialchars($app['app_filename']); ?>?repo_id=<?php echo $repo_id; ?>" class="app-link" target="_blank">
-                🚀 View Live Application
-            </a>
-            
-            <div class="secret-form">
-                <h3>Found something interesting?</h3>
-                <p>If you discovered a secret key in the application, enter it here:</p>
-                <form method="POST">
-                    <input type="text" name="secret_key" placeholder="Enter secret key">
-                    <button type="submit">Verify</button>
-                </form>
-                <?php if ($secret_message): ?>
-                    <div class="message <?php echo strpos($secret_message, 'Correct') !== false ? 'success' : 'error'; ?>">
-                        <?php echo $secret_message; ?>
-                    </div>
-                <?php endif; ?>
-            </div>
-        <?php endif; ?>
         
         <h2>Files</h2>
 <div class="file-browser">

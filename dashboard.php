@@ -7,6 +7,7 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+check_session_timeout();
 $user_id = $_SESSION['user_id'];
 
 // Récupérer l'utilisateur actuel
@@ -347,8 +348,12 @@ $unlocked_characters = $stmt->fetchAll();
         <!-- Message d'indice -->
         <div style="background: #fff8c5; border: 1px solid #d4a72c; border-radius: 6px; padding: 16px; margin: 20px 0;">
             <strong>💡 Hint:</strong> Explore repositories to find secret keys. Enter them in the search bar to unlock new profiles!
-            <?php if (count($unlocked_characters) == 0): ?>
-                <br><small>Start by exploring <strong>dev_alpha</strong>'s repositories. Check the code for clues!</small>
+            <?php if (count($unlocked_characters) == 0):
+                $stmt = $pdo->prepare("SELECT username FROM users WHERE is_arg_character = TRUE AND unlock_order = 1");
+                $stmt->execute();
+                $first_char_hint = $stmt->fetch();
+            ?>
+                <br><small>Start by exploring <strong><?php echo $first_char_hint ? htmlspecialchars($first_char_hint['username']) : 'the first character'; ?></strong>'s repositories. Check the code for clues!</small>
             <?php endif; ?>
         </div>
         

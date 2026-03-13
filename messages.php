@@ -7,6 +7,7 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+check_session_timeout();
 $user_id = $_SESSION['user_id'];
 
 // Marquer un message comme lu
@@ -56,8 +57,8 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])) {
     
     // Marquer comme lu automatiquement
     if ($selected_message && !$selected_message['is_read']) {
-        $stmt = $pdo->prepare("UPDATE messages SET is_read = TRUE WHERE id = ?");
-        $stmt->execute([$msg_id]);
+        $stmt = $pdo->prepare("UPDATE messages SET is_read = TRUE WHERE id = ? AND recipient_id = ?");
+        $stmt->execute([$msg_id, $user_id]);
     }
 }
 ?>

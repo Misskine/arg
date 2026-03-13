@@ -7,6 +7,7 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+check_session_timeout();
 $search_query = trim($_GET['q'] ?? '');
 $results = [];
 $unlock_message = '';

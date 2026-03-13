@@ -7,6 +7,7 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+check_session_timeout();
 $username = $_GET['user'] ?? '';
 
 $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");

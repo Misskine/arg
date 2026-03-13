@@ -103,11 +103,13 @@ function has_access_to_repo($pdo, $user_id, $repo_id) {
     }
 }
 
-// Vérification de session
-if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 3600)) {
-    session_unset();
-    session_destroy();
-    redirect('login.php');
+// Vérification de session (à appeler sur les pages protégées uniquement)
+function check_session_timeout() {
+    if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 3600)) {
+        session_unset();
+        session_destroy();
+        redirect('login.php');
+    }
+    $_SESSION['last_activity'] = time();
 }
-$_SESSION['last_activity'] = time();
 ?>
