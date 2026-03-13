@@ -9,8 +9,8 @@
         /* ZONE DE JEU */
         #game {
             position: relative;
-            width: 100%;
-            height: 100px;
+            width: 256px;
+            height: 79px;
             margin: 40px auto;
             border: 2px solid black;
             overflow: hidden;
@@ -23,23 +23,18 @@
             top: 0;
             left: 0;
             display: flex;
-            width: 768px; /* Augmenté pour 3 sections au lieu de 2 */
-            height: 100px;
+            width: 768px;
+            height: 79px;
             transition: transform 0.1s ease;
         }
 
         .mur-parent {
             width: 256px;
-            height: 100px;
+            height: 79px;
             position: relative;
             background-color: #fff;
             overflow: hidden;
             flex-shrink: 0;
-        }
-
-        /* Style spécial pour l'entrée (première section) */
-        .mur-parent.entrance {
-            background-color: #8B6B4D; /* Marron clair pour l'entrée */
         }
 
         img {
@@ -83,10 +78,7 @@
             0%, 100% { background-image: url('sprite/catm1.png'); }
             50% { background-image: url('sprite/catm2.png'); }
         }
-
-        #player.walking {
-            animation: walk 0.4s steps(1) infinite;
-        }
+        #player.walking { animation: walk 0.4s steps(1) infinite; }
 
         /* CORBEAU */
         #crow {
@@ -106,10 +98,7 @@
             0%, 100% { background-image: url('sprite/crow_walk.png'); }
             50% { background-image: url('sprite/crow_walking.png'); }
         }
-
-        #crow.walking {
-            animation: crowWalk 0.4s steps(1) infinite;
-        }
+        #crow.walking { animation: crowWalk 0.4s steps(1) infinite; }
 
         /* Indicateur d'entrée */
         #entrance-sign {
@@ -127,7 +116,9 @@
             pointer-events: none;
         }
 
-        /* CSS Figma (gardé identique) */
+        /* =====================
+           TILES MUR + SOL (identiques Figma)
+        ===================== */
         .mur-icon{position:absolute;top:0px;left:0px;width:16px;height:47px;object-fit:cover;}
         .mur-icon2{position:absolute;top:0px;left:16px;width:16px;height:47px;object-fit:cover;}
         .mur-icon3{position:absolute;top:0px;left:32px;width:16px;height:47px;object-fit:cover;}
@@ -177,14 +168,28 @@
         .sol-icon30{position:absolute;top:63px;left:208px;width:16px;height:16px;object-fit:cover;}
         .sol-icon31{position:absolute;top:63px;left:224px;width:16px;height:16px;object-fit:cover;}
         .sol-icon32{position:absolute;top:63px;left:240px;width:16px;height:16px;object-fit:cover;}
+
+        /* =====================
+           MEUBLES ENTRÉE (CSS Figma exact)
+        ===================== */
+        .fenetre-p-icon{position:absolute;top:11px;left:4px;width:12px;height:35px;object-fit:cover;}
+        .bibli-icon{position:absolute;top:11px;left:49px;width:18px;height:44px;object-fit:cover;}
+        .tableau-icon{position:absolute;top:19px;left:25px;width:16px;height:16px;object-fit:cover;}
+        .table-icon{position:absolute;top:37px;left:18px;width:30px;height:17px;object-fit:cover;}
+        .table-b-icon{position:absolute;top:38px;left:160px;width:21px;height:17px;object-fit:cover;}
+        .fenetre-r-icon{position:absolute;top:13px;left:133px;width:23px;height:18px;object-fit:cover;}
+        .tapis-porte-icon{position:absolute;top:49px;left:0px;width:16px;height:27px;object-fit:cover;}
+        .tapis-canap-icon{position:absolute;top:46px;left:126px;width:36px;height:21px;object-fit:contain;}
+        .canape-icon{position:absolute;top:34px;left:128px;width:32px;height:21px;object-fit:cover;}
     </style>
 </head>
 <body>
     <div id="game">
         <div id="corridor">
-            <!-- SECTION D'ENTRÉE (première section) -->
-            <div class="mur-parent entrance" src="furniture/Frame 1.png" alt="">
-                <!-- Vous pouvez mettre des sprites différents pour l'entrée si vous le souhaitez -->
+
+            <!-- SECTION D'ENTRÉE — design Figma exact -->
+            <div class="mur-parent">
+                <!-- Mur -->
                 <img class="mur-icon" src="furniture/mur.png" alt="">
                 <img class="mur-icon2" src="furniture/mur.png" alt="">
                 <img class="mur-icon3" src="furniture/mur.png" alt="">
@@ -201,6 +206,7 @@
                 <img class="mur-icon14" src="furniture/mur.png" alt="">
                 <img class="mur-icon15" src="furniture/mur.png" alt="">
                 <img class="mur-icon16" src="furniture/mur.png" alt="">
+                <!-- Sol -->
                 <img class="sol-icon" src="furniture/sol.png" alt="">
                 <img class="sol-icon2" src="furniture/sol.png" alt="">
                 <img class="sol-icon3" src="furniture/sol.png" alt="">
@@ -233,9 +239,19 @@
                 <img class="sol-icon30" src="furniture/sol.png" alt="">
                 <img class="sol-icon31" src="furniture/sol.png" alt="">
                 <img class="sol-icon32" src="furniture/sol.png" alt="">
+                <!-- Meubles Figma -->
+                <img class="fenetre-p-icon" src="furniture/fenetre_p.png" alt="">
+                <img class="bibli-icon" src="furniture/bibli.png" alt="">
+                <img class="tableau-icon" src="furniture/tableau.png" alt="">
+                <img class="table-icon" src="furniture/table.png" alt="">
+                <img class="table-b-icon" src="furniture/table-b.png" alt="">
+                <img class="fenetre-r-icon" src="furniture/fenetre_r.png" alt="">
+                <img class="tapis-porte-icon" src="furniture/tapis_porte.png" alt="">
+                <img class="tapis-canap-icon" src="furniture/tapis_canap.png" alt="">
+                <img class="canape-icon" src="furniture/canape.png" alt="">
             </div>
 
-            <!-- PREMIÈRE SECTION DU COULOIR INFINI -->
+            <!-- PREMIÈRE SECTION COULOIR INFINI -->
             <div class="mur-parent">
                 <img class="mur-icon" src="furniture/mur.png" alt="">
                 <img class="mur-icon2" src="furniture/mur.png" alt="">
@@ -287,7 +303,7 @@
                 <img class="sol-icon32" src="furniture/sol.png" alt="">
             </div>
 
-            <!-- DEUXIÈME SECTION DU COULOIR INFINI -->
+            <!-- DEUXIÈME SECTION COULOIR INFINI -->
             <div class="mur-parent">
                 <img class="mur-icon" src="furniture/mur.png" alt="">
                 <img class="mur-icon2" src="furniture/mur.png" alt="">
@@ -362,20 +378,16 @@
         const crowSpeed = 1;
         const tileWidth = 256;
         const distanceToMaintain = 150;
-        let isInCorridor = false; // Pour savoir si on est dans le corridor
+        let isInCorridor = false;
 
         function updateDarkness() {
             const darknessLevel = Math.min(totalDistance / 1000, 1);
             darkness.style.opacity = darknessLevel;
-            
-            // Centre la lumière sur le chat (position + moitié de la largeur du chat)
             const lightX = playerX + 6;
             darkness.style.setProperty('--light-x', `${lightX}px`);
         }
 
         function checkEntrance() {
-            // Si on a dépassé l'entrée (quand corridorX est négatif)
-            // La première section (entrée) fait 256px de large
             if (corridorX < -10 && !isInCorridor) {
                 isInCorridor = true;
                 entranceSign.style.opacity = '0.5';
@@ -385,24 +397,18 @@
                 entranceSign.style.opacity = '1';
                 entranceSign.textContent = 'ENTRÉE';
             }
-            
-            // Change la couleur du signe selon l'endroit
-            if (isInCorridor) {
-                entranceSign.style.background = 'rgba(100,0,0,0.5)';
-            } else {
-                entranceSign.style.background = 'rgba(0,0,0,0.5)';
-            }
+            entranceSign.style.background = isInCorridor ? 'rgba(100,0,0,0.5)' : 'rgba(0,0,0,0.5)';
         }
 
         document.addEventListener("keydown", (e) => {
             let moved = false;
-            
+
             if (e.key === "ArrowLeft") {
                 playerX = Math.max(0, playerX - speed);
                 corridorX += speed;
                 moved = true;
             }
-            
+
             if (e.key === "ArrowRight") {
                 playerX = Math.min(game.clientWidth - player.clientWidth, playerX + speed);
                 corridorX -= speed;
@@ -413,16 +419,12 @@
             if (moved) {
                 player.classList.add('walking');
                 crow.classList.add('walking');
-                
+
                 const distance = playerX - crowX;
                 if (Math.abs(distance) > distanceToMaintain) {
-                    if (distance > 0) {
-                        crowX += crowSpeed;
-                    } else {
-                        crowX -= crowSpeed;
-                    }
+                    crowX += distance > 0 ? crowSpeed : -crowSpeed;
                 }
-                
+
                 crow.style.left = crowX + "px";
                 updateDarkness();
                 checkEntrance();
@@ -431,7 +433,6 @@
                 crow.classList.remove('walking');
             }
 
-            // Gestion du défilement infini avec 3 sections
             if (corridorX <= -tileWidth * 2) {
                 corridorX += tileWidth;
             } else if (corridorX >= 0) {
@@ -449,10 +450,8 @@
             }
         });
 
-        // Initialiser la position de la lumière
         updateDarkness();
         checkEntrance();
-
         document.addEventListener("click", () => document.body.focus());
     </script>
 </body>
