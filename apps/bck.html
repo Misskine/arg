@@ -3,38 +3,43 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, width=device-width">
-    <title>Corridor infini</title>
+    <title>Entrée et Corridor infini</title>
     
     <style>
         /* ZONE DE JEU */
         #game {
             position: relative;
-            width: 256px;
-            height: 79px;
+            width: 100%;
+            height: 100px;
             margin: 40px auto;
             border: 2px solid black;
             overflow: hidden;
             background: #000;
         }
 
-        /* COULOIR INFINI */
+        /* COULOIR INFINI AVEC ENTRÉE */
         #corridor {
             position: absolute;
             top: 0;
             left: 0;
             display: flex;
-            width: 512px;
-            height: 79px;
+            width: 768px; /* Augmenté pour 3 sections au lieu de 2 */
+            height: 100px;
             transition: transform 0.1s ease;
         }
 
         .mur-parent {
             width: 256px;
-            height: 79px;
+            height: 100px;
             position: relative;
             background-color: #fff;
             overflow: hidden;
             flex-shrink: 0;
+        }
+
+        /* Style spécial pour l'entrée (première section) */
+        .mur-parent.entrance {
+            background-color: #8B6B4D; /* Marron clair pour l'entrée */
         }
 
         img {
@@ -106,7 +111,23 @@
             animation: crowWalk 0.4s steps(1) infinite;
         }
 
-        /* CSS Figma */
+        /* Indicateur d'entrée */
+        #entrance-sign {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            background: rgba(0,0,0,0.5);
+            padding: 2px 5px;
+            border-radius: 3px;
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        /* CSS Figma (gardé identique) */
         .mur-icon{position:absolute;top:0px;left:0px;width:16px;height:47px;object-fit:cover;}
         .mur-icon2{position:absolute;top:0px;left:16px;width:16px;height:47px;object-fit:cover;}
         .mur-icon3{position:absolute;top:0px;left:32px;width:16px;height:47px;object-fit:cover;}
@@ -161,6 +182,60 @@
 <body>
     <div id="game">
         <div id="corridor">
+            <!-- SECTION D'ENTRÉE (première section) -->
+            <div class="mur-parent entrance" src="furniture/Frame 1.png" alt="">
+                <!-- Vous pouvez mettre des sprites différents pour l'entrée si vous le souhaitez -->
+                <img class="mur-icon" src="furniture/mur.png" alt="">
+                <img class="mur-icon2" src="furniture/mur.png" alt="">
+                <img class="mur-icon3" src="furniture/mur.png" alt="">
+                <img class="mur-icon4" src="furniture/mur.png" alt="">
+                <img class="mur-icon5" src="furniture/mur.png" alt="">
+                <img class="mur-icon6" src="furniture/mur.png" alt="">
+                <img class="mur-icon7" src="furniture/mur.png" alt="">
+                <img class="mur-icon8" src="furniture/mur.png" alt="">
+                <img class="mur-icon9" src="furniture/mur.png" alt="">
+                <img class="mur-icon10" src="furniture/mur.png" alt="">
+                <img class="mur-icon11" src="furniture/mur.png" alt="">
+                <img class="mur-icon12" src="furniture/mur.png" alt="">
+                <img class="mur-icon13" src="furniture/mur.png" alt="">
+                <img class="mur-icon14" src="furniture/mur.png" alt="">
+                <img class="mur-icon15" src="furniture/mur.png" alt="">
+                <img class="mur-icon16" src="furniture/mur.png" alt="">
+                <img class="sol-icon" src="furniture/sol.png" alt="">
+                <img class="sol-icon2" src="furniture/sol.png" alt="">
+                <img class="sol-icon3" src="furniture/sol.png" alt="">
+                <img class="sol-icon4" src="furniture/sol.png" alt="">
+                <img class="sol-icon5" src="furniture/sol.png" alt="">
+                <img class="sol-icon6" src="furniture/sol.png" alt="">
+                <img class="sol-icon7" src="furniture/sol.png" alt="">
+                <img class="sol-icon8" src="furniture/sol.png" alt="">
+                <img class="sol-icon9" src="furniture/sol.png" alt="">
+                <img class="sol-icon10" src="furniture/sol.png" alt="">
+                <img class="sol-icon11" src="furniture/sol.png" alt="">
+                <img class="sol-icon12" src="furniture/sol.png" alt="">
+                <img class="sol-icon13" src="furniture/sol.png" alt="">
+                <img class="sol-icon14" src="furniture/sol.png" alt="">
+                <img class="sol-icon15" src="furniture/sol.png" alt="">
+                <img class="sol-icon16" src="furniture/sol.png" alt="">
+                <img class="sol-icon17" src="furniture/sol.png" alt="">
+                <img class="sol-icon18" src="furniture/sol.png" alt="">
+                <img class="sol-icon19" src="furniture/sol.png" alt="">
+                <img class="sol-icon20" src="furniture/sol.png" alt="">
+                <img class="sol-icon21" src="furniture/sol.png" alt="">
+                <img class="sol-icon22" src="furniture/sol.png" alt="">
+                <img class="sol-icon23" src="furniture/sol.png" alt="">
+                <img class="sol-icon24" src="furniture/sol.png" alt="">
+                <img class="sol-icon25" src="furniture/sol.png" alt="">
+                <img class="sol-icon26" src="furniture/sol.png" alt="">
+                <img class="sol-icon27" src="furniture/sol.png" alt="">
+                <img class="sol-icon28" src="furniture/sol.png" alt="">
+                <img class="sol-icon29" src="furniture/sol.png" alt="">
+                <img class="sol-icon30" src="furniture/sol.png" alt="">
+                <img class="sol-icon31" src="furniture/sol.png" alt="">
+                <img class="sol-icon32" src="furniture/sol.png" alt="">
+            </div>
+
+            <!-- PREMIÈRE SECTION DU COULOIR INFINI -->
             <div class="mur-parent">
                 <img class="mur-icon" src="furniture/mur.png" alt="">
                 <img class="mur-icon2" src="furniture/mur.png" alt="">
@@ -212,6 +287,7 @@
                 <img class="sol-icon32" src="furniture/sol.png" alt="">
             </div>
 
+            <!-- DEUXIÈME SECTION DU COULOIR INFINI -->
             <div class="mur-parent">
                 <img class="mur-icon" src="furniture/mur.png" alt="">
                 <img class="mur-icon2" src="furniture/mur.png" alt="">
@@ -267,6 +343,7 @@
         <div id="crow"></div>
         <div id="player"></div>
         <div id="darkness"></div>
+        <div id="entrance-sign">ENTRÉE</div>
     </div>
 
     <script>
@@ -275,6 +352,7 @@
         const corridor = document.getElementById("corridor");
         const game = document.getElementById("game");
         const darkness = document.getElementById("darkness");
+        const entranceSign = document.getElementById("entrance-sign");
 
         let playerX = 120;
         let crowX = -300;
@@ -284,6 +362,7 @@
         const crowSpeed = 1;
         const tileWidth = 256;
         const distanceToMaintain = 150;
+        let isInCorridor = false; // Pour savoir si on est dans le corridor
 
         function updateDarkness() {
             const darknessLevel = Math.min(totalDistance / 1000, 1);
@@ -292,6 +371,27 @@
             // Centre la lumière sur le chat (position + moitié de la largeur du chat)
             const lightX = playerX + 6;
             darkness.style.setProperty('--light-x', `${lightX}px`);
+        }
+
+        function checkEntrance() {
+            // Si on a dépassé l'entrée (quand corridorX est négatif)
+            // La première section (entrée) fait 256px de large
+            if (corridorX < -10 && !isInCorridor) {
+                isInCorridor = true;
+                entranceSign.style.opacity = '0.5';
+                entranceSign.textContent = 'COULOIR INFINI';
+            } else if (corridorX >= -10 && isInCorridor) {
+                isInCorridor = false;
+                entranceSign.style.opacity = '1';
+                entranceSign.textContent = 'ENTRÉE';
+            }
+            
+            // Change la couleur du signe selon l'endroit
+            if (isInCorridor) {
+                entranceSign.style.background = 'rgba(100,0,0,0.5)';
+            } else {
+                entranceSign.style.background = 'rgba(0,0,0,0.5)';
+            }
         }
 
         document.addEventListener("keydown", (e) => {
@@ -325,12 +425,14 @@
                 
                 crow.style.left = crowX + "px";
                 updateDarkness();
+                checkEntrance();
             } else {
                 player.classList.remove('walking');
                 crow.classList.remove('walking');
             }
 
-            if (corridorX <= -tileWidth) {
+            // Gestion du défilement infini avec 3 sections
+            if (corridorX <= -tileWidth * 2) {
                 corridorX += tileWidth;
             } else if (corridorX >= 0) {
                 corridorX -= tileWidth;
@@ -349,6 +451,7 @@
 
         // Initialiser la position de la lumière
         updateDarkness();
+        checkEntrance();
 
         document.addEventListener("click", () => document.body.focus());
     </script>
