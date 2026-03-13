@@ -42,12 +42,13 @@ CREATE TABLE `arg_apps` (
 
 INSERT INTO `arg_apps` (`id`, `repository_id`, `app_filename`, `secret_key`, `unlock_code`, `is_active`) VALUES
 (1, 1, 'encryption-tool.php', 'alpha-secure-456', 'beta-unlock-123', 1),
-(2, 4, 'security-scanner.php', 'beta-access-789', 'gamma-unlock-456', 1),
+(2, 4, 'apps/poticha.html', 'beta-access-789', 'gamma-unlock-456', 1),
 (3, 7, 'data-analyzer.php', 'gamma-watch-012', 'delta-unlock-789', 1),
 (4, 10, 'system-monitor.php', 'delta-log-345', 'epsilon-unlock-012', 1),
 (5, 13, 'final-puzzle.php', 'epsilon-final-678', 'complete-arg-999', 1);
 
 -- --------------------------------------------------------
+
 
 --
 -- Structure de la table `comments`
