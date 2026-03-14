@@ -2,109 +2,131 @@
 <html lang="fr">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="initial-scale=1, width=device-width">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Entrée et Corridor infini</title>
-    
+
     <style>
-        /* ZONE DE JEU */
+        /* ── RESET ── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            width: 100%; height: 100%;
+            background: #0a0a0a;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ── WRAPPER SCALE ──────────────────────────────────────────
+           On scale ce wrapper entier. Les coordonnées internes (px
+           natifs pixel-art) ne changent jamais. Le JS calcule --scale
+           pour que le jeu remplisse l'écran au mieux (max ×8).
+           ─────────────────────────────────────────────────────────── */
+        #game-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            transform: scale(var(--scale, 4));
+            transform-origin: center center;
+        }
+
+        /* ── ZONE DE JEU (dimensions pixel-art fixes) ── */
         #game {
             position: relative;
             width: 256px;
             height: 79px;
-            margin: 40px auto;
-            border: 2px solid black;
+            border: 1px solid #333;
             overflow: hidden;
             background: #000;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+            image-rendering: pixelated;
         }
 
-        /* COULOIR INFINI AVEC ENTRÉE */
+        /* ── COULOIR ── */
         #corridor {
             position: absolute;
-            top: 0;
-            left: 0;
+            top: 0; left: 0;
             display: flex;
             width: 768px;
             height: 79px;
-            transition: transform 0.1s ease;
+            will-change: transform;
         }
 
         .mur-parent {
             width: 256px;
             height: 79px;
             position: relative;
-            background-color: #fff;
             overflow: hidden;
             flex-shrink: 0;
         }
 
-        img {
-            image-rendering: pixelated;
-        }
+        img { image-rendering: pixelated; }
 
-        /* EFFET DE PÉNOMBRE */
+        /* ── TILES ── */
+        .tile-mur      { position:absolute; top:0;    width:16px; height:47px; object-fit:cover; }
+        .tile-sol-row1 { position:absolute; top:47px; width:16px; height:16px; object-fit:cover; }
+        .tile-sol-row2 { position:absolute; top:63px; width:16px; height:16px; object-fit:cover; }
+
+        /* ── PÉNOMBRE ── */
         #darkness {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: radial-gradient(
                 ellipse 100px 80px at var(--light-x, 126px) 40px,
-                rgba(0, 0, 0, 0) 0%,
-                rgba(0, 0, 0, 0.3) 40%,
-                rgba(0, 0, 0, 0.7) 70%,
-                rgba(0, 0, 0, 0.9) 100%
+                rgba(0,0,0,0)   0%,
+                rgba(0,0,0,0.3) 40%,
+                rgba(0,0,0,0.7) 70%,
+                rgba(0,0,0,0.9) 100%
             );
             pointer-events: none;
             z-index: 15;
             transition: opacity 0.3s ease;
         }
 
-        /* PERSONNAGE */
+        /* ── PERSONNAGE ── */
         #player {
             position: absolute;
-            bottom: 0;
-            left: 120px;
-            width: 12px;
-            height: 20px;
+            bottom: 0; left: 120px;
+            width: 12px; height: 20px;
             background-image: url('sprite/cat.png');
             background-size: contain;
             background-repeat: no-repeat;
             z-index: 10;
-            transition: left 0.1s linear;
+            will-change: left;
         }
-
         @keyframes walk {
             0%, 100% { background-image: url('sprite/catm1.png'); }
-            50% { background-image: url('sprite/catm2.png'); }
+            50%       { background-image: url('sprite/catm2.png'); }
         }
         #player.walking { animation: walk 0.4s steps(1) infinite; }
 
-        /* CORBEAU */
+        /* ── CORBEAU ── */
         #crow {
             position: absolute;
-            bottom: 0;
-            left: -200px;
-            width: 100px;
-            height: 50px;
+            bottom: 0; left: -200px;
+            width: 100px; height: 50px;
             background-image: url('sprite/crow.png');
             background-size: contain;
             background-repeat: no-repeat;
             z-index: 9;
-            transition: left 0.1s linear;
+            will-change: left;
         }
-
         @keyframes crowWalk {
             0%, 100% { background-image: url('sprite/crow_walk.png'); }
-            50% { background-image: url('sprite/crow_walking.png'); }
+            50%       { background-image: url('sprite/crow_walking.png'); }
         }
         #crow.walking { animation: crowWalk 0.4s steps(1) infinite; }
 
-        /* Indicateur d'entrée */
+        /* ── INDICATEUR ── */
         #entrance-sign {
             position: absolute;
-            top: 10px;
-            left: 50%;
+            top: 10px; left: 50%;
             transform: translateX(-50%);
             color: white;
             font-family: Arial, sans-serif;
@@ -114,345 +136,286 @@
             border-radius: 3px;
             z-index: 20;
             pointer-events: none;
+            transition: background 0.3s;
         }
 
-        /* =====================
-           TILES MUR + SOL (identiques Figma)
-        ===================== */
-        .mur-icon{position:absolute;top:0px;left:0px;width:16px;height:47px;object-fit:cover;}
-        .mur-icon2{position:absolute;top:0px;left:16px;width:16px;height:47px;object-fit:cover;}
-        .mur-icon3{position:absolute;top:0px;left:32px;width:16px;height:47px;object-fit:cover;}
-        .mur-icon4{position:absolute;top:0px;left:48px;width:16px;height:47px;object-fit:cover;}
-        .mur-icon5{position:absolute;top:0px;left:64px;width:16px;height:47px;object-fit:cover;}
-        .mur-icon6{position:absolute;top:0px;left:80px;width:16px;height:47px;object-fit:cover;}
-        .mur-icon7{position:absolute;top:0px;left:96px;width:16px;height:47px;object-fit:cover;}
-        .mur-icon8{position:absolute;top:0px;left:112px;width:16px;height:47px;object-fit:cover;}
-        .mur-icon9{position:absolute;top:0px;left:128px;width:16px;height:47px;object-fit:cover;}
-        .mur-icon10{position:absolute;top:0px;left:144px;width:16px;height:47px;object-fit:cover;}
-        .mur-icon11{position:absolute;top:0px;left:160px;width:16px;height:47px;object-fit:cover;}
-        .mur-icon12{position:absolute;top:0px;left:176px;width:16px;height:47px;object-fit:cover;}
-        .mur-icon13{position:absolute;top:0px;left:192px;width:16px;height:47px;object-fit:cover;}
-        .mur-icon14{position:absolute;top:0px;left:208px;width:16px;height:47px;object-fit:cover;}
-        .mur-icon15{position:absolute;top:0px;left:224px;width:16px;height:47px;object-fit:cover;}
-        .mur-icon16{position:absolute;top:0px;left:240px;width:16px;height:47px;object-fit:cover;}
+        /* ── MEUBLES ENTRÉE ── */
+        .fenetre-p-icon  { position:absolute; top:11px; left:4px;   width:12px; height:35px; object-fit:cover; }
+        .bibli-icon      { position:absolute; top:11px; left:49px;  width:18px; height:44px; object-fit:cover; }
+        .tableau-icon    { position:absolute; top:19px; left:25px;  width:16px; height:16px; object-fit:cover; }
+        .table-icon      { position:absolute; top:37px; left:18px;  width:30px; height:17px; object-fit:cover; }
+        .table-b-icon    { position:absolute; top:38px; left:160px; width:21px; height:17px; object-fit:cover; }
+        .fenetre-r-icon  { position:absolute; top:13px; left:133px; width:23px; height:18px; object-fit:cover; }
+        .tapis-porte-icon{ position:absolute; top:49px; left:0px;   width:16px; height:27px; object-fit:cover; }
+        .tapis-canap-icon{ position:absolute; top:46px; left:126px; width:36px; height:21px; object-fit:contain; }
+        .canape-icon     { position:absolute; top:34px; left:128px; width:32px; height:21px; object-fit:cover; }
 
-        .sol-icon{position:absolute;top:47px;left:0px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon2{position:absolute;top:47px;left:16px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon3{position:absolute;top:47px;left:32px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon4{position:absolute;top:47px;left:48px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon5{position:absolute;top:47px;left:64px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon6{position:absolute;top:47px;left:80px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon7{position:absolute;top:47px;left:96px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon8{position:absolute;top:47px;left:112px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon9{position:absolute;top:47px;left:128px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon10{position:absolute;top:47px;left:144px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon11{position:absolute;top:47px;left:160px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon12{position:absolute;top:47px;left:176px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon13{position:absolute;top:47px;left:192px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon14{position:absolute;top:47px;left:208px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon15{position:absolute;top:47px;left:224px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon16{position:absolute;top:47px;left:240px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon17{position:absolute;top:63px;left:0px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon18{position:absolute;top:63px;left:16px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon19{position:absolute;top:63px;left:32px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon20{position:absolute;top:63px;left:48px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon21{position:absolute;top:63px;left:64px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon22{position:absolute;top:63px;left:80px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon23{position:absolute;top:63px;left:96px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon24{position:absolute;top:63px;left:112px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon25{position:absolute;top:63px;left:128px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon26{position:absolute;top:63px;left:144px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon27{position:absolute;top:63px;left:160px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon28{position:absolute;top:63px;left:176px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon29{position:absolute;top:63px;left:192px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon30{position:absolute;top:63px;left:208px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon31{position:absolute;top:63px;left:224px;width:16px;height:16px;object-fit:cover;}
-        .sol-icon32{position:absolute;top:63px;left:240px;width:16px;height:16px;object-fit:cover;}
+        /* ── CONTRÔLES MOBILES ──
+           Taille en px natifs → scalés avec le wrapper.
+           Affichés uniquement sur écrans tactiles.       */
+        #mobile-controls {
+            display: none;
+            justify-content: center;
+            gap: 8px;
+        }
+        #mobile-controls button {
+            width: 40px; height: 20px;
+            font-size: 9px;
+            background: rgba(255,255,255,0.12);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 3px;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            line-height: 1;
+        }
+        #mobile-controls button:active { background: rgba(255,255,255,0.3); }
 
-        /* =====================
-           MEUBLES ENTRÉE (CSS Figma exact)
-        ===================== */
-        .fenetre-p-icon{position:absolute;top:11px;left:4px;width:12px;height:35px;object-fit:cover;}
-        .bibli-icon{position:absolute;top:11px;left:49px;width:18px;height:44px;object-fit:cover;}
-        .tableau-icon{position:absolute;top:19px;left:25px;width:16px;height:16px;object-fit:cover;}
-        .table-icon{position:absolute;top:37px;left:18px;width:30px;height:17px;object-fit:cover;}
-        .table-b-icon{position:absolute;top:38px;left:160px;width:21px;height:17px;object-fit:cover;}
-        .fenetre-r-icon{position:absolute;top:13px;left:133px;width:23px;height:18px;object-fit:cover;}
-        .tapis-porte-icon{position:absolute;top:49px;left:0px;width:16px;height:27px;object-fit:cover;}
-        .tapis-canap-icon{position:absolute;top:46px;left:126px;width:36px;height:21px;object-fit:contain;}
-        .canape-icon{position:absolute;top:34px;left:128px;width:32px;height:21px;object-fit:cover;}
+        @media (pointer: coarse) {
+            #mobile-controls { display: flex; }
+        }
     </style>
 </head>
 <body>
+
+<div id="game-wrapper">
     <div id="game">
-        <div id="corridor">
-
-            <!-- SECTION D'ENTRÉE — design Figma exact -->
-            <div class="mur-parent">
-                <!-- Mur -->
-                <img class="mur-icon" src="furniture/mur.png" alt="">
-                <img class="mur-icon2" src="furniture/mur.png" alt="">
-                <img class="mur-icon3" src="furniture/mur.png" alt="">
-                <img class="mur-icon4" src="furniture/mur.png" alt="">
-                <img class="mur-icon5" src="furniture/mur.png" alt="">
-                <img class="mur-icon6" src="furniture/mur.png" alt="">
-                <img class="mur-icon7" src="furniture/mur.png" alt="">
-                <img class="mur-icon8" src="furniture/mur.png" alt="">
-                <img class="mur-icon9" src="furniture/mur.png" alt="">
-                <img class="mur-icon10" src="furniture/mur.png" alt="">
-                <img class="mur-icon11" src="furniture/mur.png" alt="">
-                <img class="mur-icon12" src="furniture/mur.png" alt="">
-                <img class="mur-icon13" src="furniture/mur.png" alt="">
-                <img class="mur-icon14" src="furniture/mur.png" alt="">
-                <img class="mur-icon15" src="furniture/mur.png" alt="">
-                <img class="mur-icon16" src="furniture/mur.png" alt="">
-                <!-- Sol -->
-                <img class="sol-icon" src="furniture/sol.png" alt="">
-                <img class="sol-icon2" src="furniture/sol.png" alt="">
-                <img class="sol-icon3" src="furniture/sol.png" alt="">
-                <img class="sol-icon4" src="furniture/sol.png" alt="">
-                <img class="sol-icon5" src="furniture/sol.png" alt="">
-                <img class="sol-icon6" src="furniture/sol.png" alt="">
-                <img class="sol-icon7" src="furniture/sol.png" alt="">
-                <img class="sol-icon8" src="furniture/sol.png" alt="">
-                <img class="sol-icon9" src="furniture/sol.png" alt="">
-                <img class="sol-icon10" src="furniture/sol.png" alt="">
-                <img class="sol-icon11" src="furniture/sol.png" alt="">
-                <img class="sol-icon12" src="furniture/sol.png" alt="">
-                <img class="sol-icon13" src="furniture/sol.png" alt="">
-                <img class="sol-icon14" src="furniture/sol.png" alt="">
-                <img class="sol-icon15" src="furniture/sol.png" alt="">
-                <img class="sol-icon16" src="furniture/sol.png" alt="">
-                <img class="sol-icon17" src="furniture/sol.png" alt="">
-                <img class="sol-icon18" src="furniture/sol.png" alt="">
-                <img class="sol-icon19" src="furniture/sol.png" alt="">
-                <img class="sol-icon20" src="furniture/sol.png" alt="">
-                <img class="sol-icon21" src="furniture/sol.png" alt="">
-                <img class="sol-icon22" src="furniture/sol.png" alt="">
-                <img class="sol-icon23" src="furniture/sol.png" alt="">
-                <img class="sol-icon24" src="furniture/sol.png" alt="">
-                <img class="sol-icon25" src="furniture/sol.png" alt="">
-                <img class="sol-icon26" src="furniture/sol.png" alt="">
-                <img class="sol-icon27" src="furniture/sol.png" alt="">
-                <img class="sol-icon28" src="furniture/sol.png" alt="">
-                <img class="sol-icon29" src="furniture/sol.png" alt="">
-                <img class="sol-icon30" src="furniture/sol.png" alt="">
-                <img class="sol-icon31" src="furniture/sol.png" alt="">
-                <img class="sol-icon32" src="furniture/sol.png" alt="">
-                <!-- Meubles Figma -->
-                <img class="fenetre-p-icon" src="furniture/fenetre_p.png" alt="">
-                <img class="bibli-icon" src="furniture/bibli.png" alt="">
-                <img class="tableau-icon" src="furniture/tableau.png" alt="">
-                <img class="table-icon" src="furniture/table.png" alt="">
-                <img class="table-b-icon" src="furniture/table-b.png" alt="">
-                <img class="fenetre-r-icon" src="furniture/fenetre_r.png" alt="">
-                <img class="tapis-porte-icon" src="furniture/tapis_porte.png" alt="">
-                <img class="tapis-canap-icon" src="furniture/tapis_canap.png" alt="">
-                <img class="canape-icon" src="furniture/canape.png" alt="">
-            </div>
-
-            <!-- PREMIÈRE SECTION COULOIR INFINI -->
-            <div class="mur-parent">
-                <img class="mur-icon" src="furniture/mur.png" alt="">
-                <img class="mur-icon2" src="furniture/mur.png" alt="">
-                <img class="mur-icon3" src="furniture/mur.png" alt="">
-                <img class="mur-icon4" src="furniture/mur.png" alt="">
-                <img class="mur-icon5" src="furniture/mur.png" alt="">
-                <img class="mur-icon6" src="furniture/mur.png" alt="">
-                <img class="mur-icon7" src="furniture/mur.png" alt="">
-                <img class="mur-icon8" src="furniture/mur.png" alt="">
-                <img class="mur-icon9" src="furniture/mur.png" alt="">
-                <img class="mur-icon10" src="furniture/mur.png" alt="">
-                <img class="mur-icon11" src="furniture/mur.png" alt="">
-                <img class="mur-icon12" src="furniture/mur.png" alt="">
-                <img class="mur-icon13" src="furniture/mur.png" alt="">
-                <img class="mur-icon14" src="furniture/mur.png" alt="">
-                <img class="mur-icon15" src="furniture/mur.png" alt="">
-                <img class="mur-icon16" src="furniture/mur.png" alt="">
-                <img class="sol-icon" src="furniture/sol.png" alt="">
-                <img class="sol-icon2" src="furniture/sol.png" alt="">
-                <img class="sol-icon3" src="furniture/sol.png" alt="">
-                <img class="sol-icon4" src="furniture/sol.png" alt="">
-                <img class="sol-icon5" src="furniture/sol.png" alt="">
-                <img class="sol-icon6" src="furniture/sol.png" alt="">
-                <img class="sol-icon7" src="furniture/sol.png" alt="">
-                <img class="sol-icon8" src="furniture/sol.png" alt="">
-                <img class="sol-icon9" src="furniture/sol.png" alt="">
-                <img class="sol-icon10" src="furniture/sol.png" alt="">
-                <img class="sol-icon11" src="furniture/sol.png" alt="">
-                <img class="sol-icon12" src="furniture/sol.png" alt="">
-                <img class="sol-icon13" src="furniture/sol.png" alt="">
-                <img class="sol-icon14" src="furniture/sol.png" alt="">
-                <img class="sol-icon15" src="furniture/sol.png" alt="">
-                <img class="sol-icon16" src="furniture/sol.png" alt="">
-                <img class="sol-icon17" src="furniture/sol.png" alt="">
-                <img class="sol-icon18" src="furniture/sol.png" alt="">
-                <img class="sol-icon19" src="furniture/sol.png" alt="">
-                <img class="sol-icon20" src="furniture/sol.png" alt="">
-                <img class="sol-icon21" src="furniture/sol.png" alt="">
-                <img class="sol-icon22" src="furniture/sol.png" alt="">
-                <img class="sol-icon23" src="furniture/sol.png" alt="">
-                <img class="sol-icon24" src="furniture/sol.png" alt="">
-                <img class="sol-icon25" src="furniture/sol.png" alt="">
-                <img class="sol-icon26" src="furniture/sol.png" alt="">
-                <img class="sol-icon27" src="furniture/sol.png" alt="">
-                <img class="sol-icon28" src="furniture/sol.png" alt="">
-                <img class="sol-icon29" src="furniture/sol.png" alt="">
-                <img class="sol-icon30" src="furniture/sol.png" alt="">
-                <img class="sol-icon31" src="furniture/sol.png" alt="">
-                <img class="sol-icon32" src="furniture/sol.png" alt="">
-            </div>
-
-            <!-- DEUXIÈME SECTION COULOIR INFINI -->
-            <div class="mur-parent">
-                <img class="mur-icon" src="furniture/mur.png" alt="">
-                <img class="mur-icon2" src="furniture/mur.png" alt="">
-                <img class="mur-icon3" src="furniture/mur.png" alt="">
-                <img class="mur-icon4" src="furniture/mur.png" alt="">
-                <img class="mur-icon5" src="furniture/mur.png" alt="">
-                <img class="mur-icon6" src="furniture/mur.png" alt="">
-                <img class="mur-icon7" src="furniture/mur.png" alt="">
-                <img class="mur-icon8" src="furniture/mur.png" alt="">
-                <img class="mur-icon9" src="furniture/mur.png" alt="">
-                <img class="mur-icon10" src="furniture/mur.png" alt="">
-                <img class="mur-icon11" src="furniture/mur.png" alt="">
-                <img class="mur-icon12" src="furniture/mur.png" alt="">
-                <img class="mur-icon13" src="furniture/mur.png" alt="">
-                <img class="mur-icon14" src="furniture/mur.png" alt="">
-                <img class="mur-icon15" src="furniture/mur.png" alt="">
-                <img class="mur-icon16" src="furniture/mur.png" alt="">
-                <img class="sol-icon" src="furniture/sol.png" alt="">
-                <img class="sol-icon2" src="furniture/sol.png" alt="">
-                <img class="sol-icon3" src="furniture/sol.png" alt="">
-                <img class="sol-icon4" src="furniture/sol.png" alt="">
-                <img class="sol-icon5" src="furniture/sol.png" alt="">
-                <img class="sol-icon6" src="furniture/sol.png" alt="">
-                <img class="sol-icon7" src="furniture/sol.png" alt="">
-                <img class="sol-icon8" src="furniture/sol.png" alt="">
-                <img class="sol-icon9" src="furniture/sol.png" alt="">
-                <img class="sol-icon10" src="furniture/sol.png" alt="">
-                <img class="sol-icon11" src="furniture/sol.png" alt="">
-                <img class="sol-icon12" src="furniture/sol.png" alt="">
-                <img class="sol-icon13" src="furniture/sol.png" alt="">
-                <img class="sol-icon14" src="furniture/sol.png" alt="">
-                <img class="sol-icon15" src="furniture/sol.png" alt="">
-                <img class="sol-icon16" src="furniture/sol.png" alt="">
-                <img class="sol-icon17" src="furniture/sol.png" alt="">
-                <img class="sol-icon18" src="furniture/sol.png" alt="">
-                <img class="sol-icon19" src="furniture/sol.png" alt="">
-                <img class="sol-icon20" src="furniture/sol.png" alt="">
-                <img class="sol-icon21" src="furniture/sol.png" alt="">
-                <img class="sol-icon22" src="furniture/sol.png" alt="">
-                <img class="sol-icon23" src="furniture/sol.png" alt="">
-                <img class="sol-icon24" src="furniture/sol.png" alt="">
-                <img class="sol-icon25" src="furniture/sol.png" alt="">
-                <img class="sol-icon26" src="furniture/sol.png" alt="">
-                <img class="sol-icon27" src="furniture/sol.png" alt="">
-                <img class="sol-icon28" src="furniture/sol.png" alt="">
-                <img class="sol-icon29" src="furniture/sol.png" alt="">
-                <img class="sol-icon30" src="furniture/sol.png" alt="">
-                <img class="sol-icon31" src="furniture/sol.png" alt="">
-                <img class="sol-icon32" src="furniture/sol.png" alt="">
-            </div>
-        </div>
-
+        <div id="corridor"></div>
         <div id="crow"></div>
         <div id="player"></div>
         <div id="darkness"></div>
         <div id="entrance-sign">ENTRÉE</div>
     </div>
 
-    <script>
-        const player = document.getElementById("player");
-        const crow = document.getElementById("crow");
-        const corridor = document.getElementById("corridor");
-        const game = document.getElementById("game");
-        const darkness = document.getElementById("darkness");
-        const entranceSign = document.getElementById("entrance-sign");
+    <div id="mobile-controls">
+        <button id="btn-left"  aria-label="Gauche">◀</button>
+        <button id="btn-right" aria-label="Droite">▶</button>
+    </div>
+</div>
 
-        let playerX = 120;
-        let crowX = -300;
-        let corridorX = 0;
-        let totalDistance = 0;
-        const speed = 3;
-        const crowSpeed = 1;
-        const tileWidth = 256;
-        const distanceToMaintain = 150;
-        let isInCorridor = false;
+<script>
+/* ─────────────────────────────────────────────
+   SCALE RESPONSIVE
+   Calcule le meilleur scale entier (pixel-art
+   net) ou fractionnaire pour remplir l'écran.
+   Max ×8, recalculé à chaque resize.
+   ───────────────────────────────────────────── */
+const GAME_W   = 256;
+const GAME_H   = 79;
+const MAX_SCALE = 8;
+const MARGIN    = 24; // px de marge de confort (coordonnées écran)
 
-        function updateDarkness() {
-            const darknessLevel = Math.min(totalDistance / 1000, 1);
-            darkness.style.opacity = darknessLevel;
-            const lightX = playerX + 6;
-            darkness.style.setProperty('--light-x', `${lightX}px`);
+function updateScale() {
+    const hasTouch   = window.matchMedia('(pointer: coarse)').matches;
+    const btnReserve = hasTouch ? 30 : 0; // hauteur boutons (px natifs × scale → on anticipe)
+    const vw = window.innerWidth  - MARGIN * 2;
+    const vh = window.innerHeight - MARGIN * 2;
+
+    // Scale max pour tenir dans l'écran (boutons compris)
+    const scaleX = vw / GAME_W;
+    const scaleY = vh / (GAME_H + (hasTouch ? 30 : 0));
+    const scale  = Math.min(scaleX, scaleY, MAX_SCALE);
+
+    document.getElementById('game-wrapper').style.setProperty('--scale', scale.toFixed(4));
+}
+
+updateScale();
+window.addEventListener('resize', updateScale);
+// Sur mobile l'URL bar apparaît/disparaît → visualViewport plus fiable
+if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', updateScale);
+}
+
+
+/* ─────────────────────────────────────────────
+   CONSTRUCTION DES TILES EN JS
+   ───────────────────────────────────────────── */
+function buildSection(withFurniture) {
+    const div = document.createElement('div');
+    div.className = 'mur-parent';
+
+    for (let i = 0; i < 16; i++) {
+        const img = document.createElement('img');
+        img.className = 'tile-mur';
+        img.style.left = (i * 16) + 'px';
+        img.src = 'furniture/mur.png'; img.alt = '';
+        div.appendChild(img);
+    }
+    for (let i = 0; i < 16; i++) {
+        const img = document.createElement('img');
+        img.className = 'tile-sol-row1';
+        img.style.left = (i * 16) + 'px';
+        img.src = 'furniture/sol.png'; img.alt = '';
+        div.appendChild(img);
+    }
+    for (let i = 0; i < 16; i++) {
+        const img = document.createElement('img');
+        img.className = 'tile-sol-row2';
+        img.style.left = (i * 16) + 'px';
+        img.src = 'furniture/sol.png'; img.alt = '';
+        div.appendChild(img);
+    }
+
+    if (withFurniture) {
+        const furniture = [
+            { cls: 'fenetre-p-icon',   src: 'furniture/fenetre_p.png'  },
+            { cls: 'bibli-icon',       src: 'furniture/bibli.png'      },
+            { cls: 'tableau-icon',     src: 'furniture/tableau.png'    },
+            { cls: 'table-icon',       src: 'furniture/table.png'      },
+            { cls: 'table-b-icon',     src: 'furniture/table-b.png'    },
+            { cls: 'fenetre-r-icon',   src: 'furniture/fenetre_r.png'  },
+            { cls: 'tapis-porte-icon', src: 'furniture/tapis_porte.png'},
+            { cls: 'tapis-canap-icon', src: 'furniture/tapis_canap.png'},
+            { cls: 'canape-icon',      src: 'furniture/canape.png'     },
+        ];
+        for (const f of furniture) {
+            const img = document.createElement('img');
+            img.className = f.cls;
+            img.src = f.src; img.alt = '';
+            div.appendChild(img);
         }
+    }
+    return div;
+}
 
-        function checkEntrance() {
-            if (corridorX < -10 && !isInCorridor) {
-                isInCorridor = true;
-                entranceSign.style.opacity = '0.5';
-                entranceSign.textContent = 'COULOIR INFINI';
-            } else if (corridorX >= -10 && isInCorridor) {
-                isInCorridor = false;
-                entranceSign.style.opacity = '1';
-                entranceSign.textContent = 'ENTRÉE';
-            }
-            entranceSign.style.background = isInCorridor ? 'rgba(100,0,0,0.5)' : 'rgba(0,0,0,0.5)';
-        }
+(function buildCorridor() {
+    const c = document.getElementById('corridor');
+    c.appendChild(buildSection(true));   // section 0 : entrée avec meubles
+    c.appendChild(buildSection(false));  // section 1 : couloir
+    c.appendChild(buildSection(false));  // section 2 : couloir
+})();
 
-        document.addEventListener("keydown", (e) => {
-            let moved = false;
 
-            if (e.key === "ArrowLeft") {
-                playerX = Math.max(0, playerX - speed);
-                corridorX += speed;
-                moved = true;
-            }
+/* ─────────────────────────────────────────────
+   ÉTAT DU JEU
+   ───────────────────────────────────────────── */
+const player       = document.getElementById('player');
+const crow         = document.getElementById('crow');
+const corridor     = document.getElementById('corridor');
+const game         = document.getElementById('game');
+const darkness     = document.getElementById('darkness');
+const entranceSign = document.getElementById('entrance-sign');
 
-            if (e.key === "ArrowRight") {
-                playerX = Math.min(game.clientWidth - player.clientWidth, playerX + speed);
-                corridorX -= speed;
-                totalDistance += speed;
-                moved = true;
-            }
+let playerX         = 120;
+let crowX           = -300;
+let corridorX       = 0;      // 0 → entrée visible au départ
+let totalDistance   = 0;
+let isInCorridor    = false;
+let hasLeftEntrance = false;
 
-            if (moved) {
-                player.classList.add('walking');
-                crow.classList.add('walking');
+const SPEED         = 3;
+const CROW_SPEED    = 1;
+const TILE_WIDTH    = 256;
+const CROW_DISTANCE = 150;
 
-                const distance = playerX - crowX;
-                if (Math.abs(distance) > distanceToMaintain) {
-                    crowX += distance > 0 ? crowSpeed : -crowSpeed;
-                }
+const keys = { left: false, right: false };
 
-                crow.style.left = crowX + "px";
-                updateDarkness();
-                checkEntrance();
-            } else {
-                player.classList.remove('walking');
-                crow.classList.remove('walking');
-            }
 
-            if (corridorX <= -tileWidth * 2) {
-                corridorX += tileWidth;
-            } else if (corridorX >= 0) {
-                corridorX -= tileWidth;
-            }
+/* ─────────────────────────────────────────────
+   BOUCLE PRINCIPALE — requestAnimationFrame
+   ───────────────────────────────────────────── */
+let lastTime = 0;
 
-            player.style.left = playerX + "px";
-            corridor.style.transform = `translateX(${corridorX}px)`;
-        });
+function gameLoop(ts) {
+    const dt = Math.min((ts - lastTime) / 16.67, 3);
+    lastTime = ts;
 
-        document.addEventListener("keyup", (e) => {
-            if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
-                player.classList.remove('walking');
-                crow.classList.remove('walking');
-            }
-        });
+    let moved = false;
 
-        updateDarkness();
-        checkEntrance();
-        document.addEventListener("click", () => document.body.focus());
-    </script>
+    if (keys.left) {
+        playerX    = Math.max(0, playerX - SPEED * dt);
+        corridorX += SPEED * dt;
+        moved = true;
+    }
+    if (keys.right) {
+        playerX       = Math.min(game.clientWidth - player.clientWidth, playerX + SPEED * dt);
+        corridorX    -= SPEED * dt;
+        totalDistance += SPEED * dt;
+        moved = true;
+    }
+
+    // Corbeau autonome
+    const dist = playerX - crowX;
+    if (Math.abs(dist) > CROW_DISTANCE) {
+        crowX += CROW_SPEED * (dist > 0 ? 1 : -1) * dt;
+    }
+
+    // Clamp : impossible de reculer derrière l'entrée
+    if (corridorX > 0) corridorX = 0;
+
+    // Wrap infini (seulement après avoir quitté l'entrée)
+    if (corridorX < -TILE_WIDTH) hasLeftEntrance = true;
+    if (hasLeftEntrance && corridorX <= -TILE_WIDTH * 2) corridorX += TILE_WIDTH;
+
+    // Animations marche
+    player.classList.toggle('walking', moved);
+    crow.classList.toggle('walking', moved);
+
+    // Applique les positions
+    player.style.left        = playerX + 'px';
+    crow.style.left          = crowX   + 'px';
+    corridor.style.transform = `translateX(${corridorX}px)`;
+
+    updateDarkness();
+    checkEntrance();
+
+    requestAnimationFrame(gameLoop);
+}
+
+requestAnimationFrame(ts => { lastTime = ts; requestAnimationFrame(gameLoop); });
+
+
+/* ─────────────────────────────────────────────
+   PÉNOMBRE
+   ───────────────────────────────────────────── */
+function updateDarkness() {
+    darkness.style.opacity = Math.min(totalDistance / 1000, 1);
+    darkness.style.setProperty('--light-x', (playerX + 6) + 'px');
+}
+
+
+/* ─────────────────────────────────────────────
+   INDICATEUR ENTRÉE / COULOIR
+   ───────────────────────────────────────────── */
+function checkEntrance() {
+    const inCorridor = corridorX < -10;
+    if (inCorridor === isInCorridor) return;
+    isInCorridor = inCorridor;
+    entranceSign.textContent      = inCorridor ? 'COULOIR INFINI' : 'ENTRÉE';
+    entranceSign.style.opacity    = inCorridor ? '0.5' : '1';
+    entranceSign.style.background = inCorridor ? 'rgba(100,0,0,0.5)' : 'rgba(0,0,0,0.5)';
+}
+
+
+/* ─────────────────────────────────────────────
+   CLAVIER
+   ───────────────────────────────────────────── */
+document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft')  { e.preventDefault(); keys.left  = true; }
+    if (e.key === 'ArrowRight') { e.preventDefault(); keys.right = true; }
+});
+document.addEventListener('keyup', e => {
+    if (e.key === 'ArrowLeft')  keys.left  = false;
+    if (e.key === 'ArrowRight') keys.right = false;
+});
+
+
+/* ─────────────────────────────────────────────
+   CONTRÔLES MOBILES
+   ───────────────────────────────────────────── */
+function bindBtn(id, key) {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    btn.addEventListener('pointerdown',   e => { e.preventDefault(); keys[key] = true;  });
+    btn.addEventListener('pointerup',     () => { keys[key] = false; });
+    btn.addEventListener('pointerleave',  () => { keys[key] = false; });
+    btn.addEventListener('pointercancel', () => { keys[key] = false; });
+}
+bindBtn('btn-left',  'left');
+bindBtn('btn-right', 'right');
+
+document.addEventListener('click', () => document.body.focus());
+</script>
 </body>
 </html>
