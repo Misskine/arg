@@ -7,7 +7,6 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-check_session_timeout();
 $search_query = trim($_GET['q'] ?? '');
 $results = [];
 $unlock_message = '';
@@ -16,7 +15,7 @@ if ($search_query) {
     // 1. Vérifier si c'est un code de déverrouillage ARG
     $stmt = $pdo->prepare("
         SELECT fa.*, r.id as repo_id, r.name as repo_name, r.user_id, u.username 
-        FROM arg_apps fa
+        FROM functional_apps fa
         JOIN repositories r ON fa.repository_id = r.id
         JOIN users u ON r.user_id = u.id
         WHERE fa.unlock_code = ? OR fa.secret_key = ?
@@ -27,14 +26,22 @@ if ($search_query) {
     if ($arg_item) {
         // Si c'est un code de déverrouillage
         if ($search_query === $arg_item['unlock_code']) {
-            // Trouver l'utilisateur ARG lié à ce repository
+            // Trouver le propriétaire du repo pour connaître son unlock_order
             $stmt = $pdo->prepare("
-                SELECT u.* 
-                FROM users u 
-                JOIN repositories r ON u.id = r.user_id 
+                SELECT u.* FROM users u
+                JOIN repositories r ON u.id = r.user_id
                 WHERE r.id = ?
             ");
             $stmt->execute([$arg_item['repo_id']]);
+            $repo_owner = $stmt->fetch();
+
+            // Débloquer le personnage ARG SUIVANT (unlock_order + 1)
+            $next_order = $repo_owner ? $repo_owner['unlock_order'] + 1 : 1;
+            $stmt = $pdo->prepare("
+                SELECT * FROM users
+                WHERE is_arg_character = TRUE AND unlock_order = ?
+            ");
+            $stmt->execute([$next_order]);
             $target_user = $stmt->fetch();
             
             if ($target_user && $target_user['is_arg_character']) {

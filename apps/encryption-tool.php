@@ -108,8 +108,8 @@ System Logs:
         }
         
         // Easter egg dans la console
-        console.log("%c🔐 ARG Clue: Try key 'beta-access' in the encryption tool", 
-                   "color: #ff6b6b; font-size: 14px; font-weight: bold;");
+        console.log("%c🔐 Something is hidden here...",
+                   "color: #58a6ff; font-size: 12px;");
     </script>
 </body>
 </html>

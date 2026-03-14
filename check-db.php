@@ -5,7 +5,7 @@ include 'config.php';
 echo "<h2>Vérification de la base de données</h2>";
 
 // Vérifier les tables
-$tables = ['users', 'repositories', 'arg_apps', 'repository_files', 'player_progress'];
+$tables = ['users', 'repositories', 'functional_apps', 'repository_files', 'player_progress', 'messages', 'found_secrets'];
 foreach ($tables as $table) {
     try {
         $stmt = $pdo->query("SELECT COUNT(*) as count FROM $table");
@@ -19,15 +19,15 @@ foreach ($tables as $table) {
 // Vérifier les contraintes de clés étrangères
 echo "<h3>Vérification des relations:</h3>";
 
-// Vérifier que chaque arg_apps a un repository valide
+// Vérifier que chaque functional_apps a un repository valide
 $stmt = $pdo->query("
     SELECT COUNT(*) as invalid_count 
-    FROM arg_apps a 
+    FROM functional_apps a 
     LEFT JOIN repositories r ON a.repository_id = r.id 
     WHERE r.id IS NULL
 ");
 $result = $stmt->fetch();
-echo "<p>Applications ARG sans repository: " . $result['invalid_count'] . "</p>";
+echo "<p>Applications sans repository: " . $result['invalid_count'] . "</p>";
 
 // Vérifier que chaque repository a un utilisateur valide
 $stmt = $pdo->query("
@@ -39,11 +39,11 @@ $stmt = $pdo->query("
 $result = $stmt->fetch();
 echo "<p>Repositories sans utilisateur: " . $result['invalid_count'] . "</p>";
 
-// Afficher les applications ARG
-echo "<h3>Applications ARG configurées:</h3>";
+// Afficher les applications
+echo "<h3>Applications configurées:</h3>";
 $stmt = $pdo->query("
     SELECT a.*, r.name as repo_name, u.username 
-    FROM arg_apps a
+    FROM functional_apps a
     JOIN repositories r ON a.repository_id = r.id
     JOIN users u ON r.user_id = u.id
     ORDER BY u.unlock_order
@@ -58,4 +58,3 @@ foreach ($apps as $app) {
     echo "Code de déverrouillage: " . htmlspecialchars($app['unlock_code']) . "<br>";
     echo "</div>";
 }
-?>

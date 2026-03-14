@@ -7,7 +7,6 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-check_session_timeout();
 $file_id = $_GET['id'] ?? 0;
 
 $stmt = $pdo->prepare("

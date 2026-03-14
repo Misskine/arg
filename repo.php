@@ -7,7 +7,6 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-check_session_timeout();
 $repo_id = $_GET['id'] ?? 0;
 
 // Récupérer le repository
@@ -64,7 +63,7 @@ $stmt->execute([$repo_id]);
 $issues = $stmt->fetchAll();
 
 // Récupérer l'application fonctionnelle si elle existe
-$stmt = $pdo->prepare("SELECT * FROM arg_apps WHERE repository_id = ?");
+$stmt = $pdo->prepare("SELECT * FROM functional_apps WHERE repository_id = ?");
 $stmt->execute([$repo_id]);
 $app = $stmt->fetch();
 
@@ -246,7 +245,7 @@ $current_user = $stmt->fetch();
         <input type="text" class="search-input" placeholder="Search or jump to..." onclick="window.location.href='search.php'">
         <nav>
             <a href="dashboard.php">Dashboard</a>
-            <a href="profile.php?user=<?php echo urlencode($current_user['username']); ?>"><?php echo htmlspecialchars($current_user['username']); ?></a>
+            <a href="profile.php"><?php echo htmlspecialchars($current_user['username']); ?></a>
         </nav>
     </header>
     
@@ -269,58 +268,58 @@ $current_user = $stmt->fetch();
         </div>
         
         <h2>Files</h2>
-<div class="file-browser">
-    <?php if (empty($files)): ?>
-        <div class="file-item">No files in this repository.</div>
-    <?php else: ?>
-        <?php foreach ($files as $file): ?>
-            <div class="file-item">
-                <a href="file.php?id=<?php echo $file['id']; ?>">
-                    📄 <?php echo htmlspecialchars($file['filepath'] ? $file['filepath'] . '/' : ''); ?><?php echo htmlspecialchars($file['filename']); ?>
+        <div class="file-browser">
+            <?php if (empty($files)): ?>
+                <div class="file-item">No files in this repository.</div>
+            <?php else: ?>
+                <?php foreach ($files as $file): ?>
+                    <div class="file-item">
+                        <a href="file.php?id=<?php echo $file['id']; ?>">
+                            📄 <?php echo htmlspecialchars($file['filepath'] ? $file['filepath'] . '/' : ''); ?><?php echo htmlspecialchars($file['filename']); ?>
+                        </a>
+                        <?php
+                        $has_clue = strpos(strtolower($file['content'] ?? ''), 'secret') !== false ||
+                                    strpos(strtolower($file['content'] ?? ''), 'key') !== false ||
+                                    strpos(strtolower($file['content'] ?? ''), 'password') !== false;
+                        if ($has_clue && $repo['is_arg_character']): ?>
+                            <span style="background: #fff8c5; color: #d4a72c; padding: 2px 8px; border-radius: 12px; font-size: 11px; margin-left: 10px;">
+                                🔍 Contains clues
+                            </span>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
+
+        <?php if ($app): ?>
+            <div style="background: linear-gradient(45deg, #6e40c9, #3d8bb1); color: white; padding: 20px; border-radius: 6px; margin: 20px 0;">
+                <h3>🚀 Live Application: <?php echo htmlspecialchars($app['app_filename']); ?></h3>
+                <p>This functional application may contain hidden clues. Interact with it to find secrets!</p>
+                <a href="apps/<?php echo htmlspecialchars($app['app_filename']); ?>" target="_blank"
+                   style="background: white; color: #6e40c9; padding: 10px 20px; border-radius: 6px; text-decoration: none; display: inline-block; margin-top: 10px;">
+                    Open Application
                 </a>
-                <?php 
-                // Ajouter un indicateur si le fichier contient un indice ARG
-                $has_clue = strpos(strtolower($file['content']), 'secret') !== false || 
-                           strpos(strtolower($file['content']), 'key') !== false ||
-                           strpos(strtolower($file['content']), 'password') !== false;
-                if ($has_clue && $repo['is_arg_character']): ?>
-                    <span style="background: #fff8c5; color: #d4a72c; padding: 2px 8px; border-radius: 12px; font-size: 11px; margin-left: 10px;">
-                        🔍 Contains clues
-                    </span>
+            </div>
+
+            <div class="secret-form">
+                <h3>Found a secret key?</h3>
+                <p>If you discovered a secret key in the application or code, enter it here:</p>
+                <form method="POST">
+                    <input type="text" name="secret_key" placeholder="Enter secret key (e.g., alpha-123)">
+                    <button type="submit" style="background: #2ea44f; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer;">
+                        Verify Key
+                    </button>
+                </form>
+                <?php if ($secret_message): ?>
+                    <div style="margin-top: 10px; padding: 10px;
+                         background: <?php echo strpos($secret_message, 'Correct') !== false ? '#dafbe1' : '#ffebe9'; ?>;
+                         border: 1px solid <?php echo strpos($secret_message, 'Correct') !== false ? '#2ea44f' : '#cf222e'; ?>;
+                         border-radius: 6px;">
+                        <?php echo $secret_message; ?>
+                    </div>
                 <?php endif; ?>
             </div>
-        <?php endforeach; ?>
-    <?php endif; ?>
-</div>
-
-<?php if ($app): ?>
-    <!-- Application ARG avec formulaire pour entrer des clés -->
-    <div style="background: linear-gradient(45deg, #6e40c9, #3d8bb1); color: white; padding: 20px; border-radius: 6px; margin: 20px 0;">
-        <h3>🚀 Live Application: <?php echo htmlspecialchars($app['app_filename']); ?></h3>
-        <p>This functional application may contain hidden clues. Interact with it to find secrets!</p>
-        <a href="apps/<?php echo htmlspecialchars($app['app_filename']); ?>" class="app-link" target="_blank" 
-           style="background: white; color: #6e40c9; padding: 10px 20px; border-radius: 6px; text-decoration: none; display: inline-block; margin-top: 10px;">
-            Open Application
-        </a>
-    </div>
-    
-    <div class="secret-form">
-        <h3>Found a secret key?</h3>
-        <p>If you discovered a secret key in the application or code, enter it here:</p>
-        <form method="POST">
-            <input type="text" name="secret_key" placeholder="Enter secret key (e.g., alpha-123)">
-            <button type="submit" style="background: #2ea44f; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer;">
-                Verify Key
-            </button>
-        </form>
-        <?php if ($secret_message): ?>
-            <div style="margin-top: 10px; padding: 10px; background: <?php echo strpos($secret_message, 'Correct') !== false ? '#dafbe1' : '#ffebe9'; ?>; 
-                 border: 1px solid <?php echo strpos($secret_message, 'Correct') !== false ? '#2ea44f' : '#cf222e'; ?>; border-radius: 6px;">
-                <?php echo $secret_message; ?>
-            </div>
         <?php endif; ?>
-    </div>
-<?php endif; ?>
         
         <h2>Recent Commits</h2>
         <div class="commit-list">
