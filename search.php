@@ -62,7 +62,7 @@ if ($search_query) {
                     
                     // Envoyer un message du personnage débloqué
                     $welcome_messages = [
-                        2 => "You found me. I'm dev_beta. Alpha was right to be suspicious. Check my encryption-tools repository. The key is in the XOR function.",
+                        2 => "You found me. I'm dev_beta. Alpha was right to be suspicious. Check my encryption-tools repository. The key is in the poticha function.",
                         3 => "dev_gamma here. I've been analyzing the data. Something's happening at midnight UTC. Look at my data-analysis repo.",
                         4 => "This is dev_delta. The system logs show unauthorized access patterns. Start with my system-monitor repo.",
                         5 => "Epsilon here. I know what happened now. But I can't say it here. Check my private-notes repository. The final key is 'epsilon-final'."

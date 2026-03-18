@@ -129,11 +129,11 @@ USE gitrepo;
 
 INSERT INTO repositories (user_id, name, description, language, is_private, updated_at) VALUES
 -- dev_alpha (unlock_order = 1) — déjà débloqué à l'inscription
-((SELECT id FROM users WHERE username = 'dev_alpha'), 'cipher-utils',      'A collection of classical cipher utilities',          'Python',     FALSE, NOW()),
+((SELECT id FROM users WHERE username = 'dev_alpha'), 'encryption-tool',      'A collection of classical encryption-tool utilities',          'Python',     FALSE, NOW()),
 ((SELECT id FROM users WHERE username = 'dev_alpha'), 'notes',             'Personal notes and drafts',                           'Markdown',   FALSE, NOW()),
 
 -- dev_beta (unlock_order = 2)
-((SELECT id FROM users WHERE username = 'dev_beta'),  'encryption-tools',  'XOR and AES encryption helpers',                     'Python',     FALSE, NOW()),
+((SELECT id FROM users WHERE username = 'dev_beta'),  'potichat',  'simulateur de chat',                     'Python',     FALSE, NOW()),
 ((SELECT id FROM users WHERE username = 'dev_beta'),  'web-scraper',       'General purpose web scraping toolkit',                'Python',     FALSE, NOW()),
 
 -- dev_gamma (unlock_order = 3)
@@ -150,15 +150,15 @@ INSERT INTO repositories (user_id, name, description, language, is_private, upda
 
 
 -- ============================================================
--- FICHIERS : dev_alpha/cipher-utils  (contient la clé secrète)
+-- FICHIERS : dev_alpha/encryption-tool-utils  (contient la clé secrète)
 -- ============================================================
 
 INSERT INTO repository_files (repository_id, filename, filepath, content, language) VALUES
 
--- cipher-utils
-((SELECT r.id FROM repositories r JOIN users u ON r.user_id = u.id WHERE u.username = 'dev_alpha' AND r.name = 'cipher-utils'),
+-- encryption-tool-utils
+((SELECT r.id FROM repositories r JOIN users u ON r.user_id = u.id WHERE u.username = 'dev_alpha' AND r.name = 'encryption-tool-utils'),
  'caesar.py', '', 
-'# Caesar cipher implementation
+'# Caesar encryption-tool implementation
 # Author: dev_alpha
 # Last modified: see commit history
 
@@ -186,11 +186,11 @@ if __name__ == "__main__":
 ',
 'Python'),
 
-((SELECT r.id FROM repositories r JOIN users u ON r.user_id = u.id WHERE u.username = 'dev_alpha' AND r.name = 'cipher-utils'),
+((SELECT r.id FROM repositories r JOIN users u ON r.user_id = u.id WHERE u.username = 'dev_alpha' AND r.name = 'encryption-tool-utils'),
  'README.md', '',
-'# cipher-utils
+'# encryption-tool-utils
 
-A small collection of classical cipher tools written in Python.
+A small collection of classical encryption-tool tools written in Python.
 
 ## Usage
 
@@ -217,7 +217,7 @@ Been noticing some weird patterns in the server logs lately.
 Someone is accessing the data pipeline at odd hours.
 
 I left a note for whoever finds this:
-Check beta''s encryption-tools repo. The XOR function hides something.
+Check beta''s encryption-tools repo. The poticha function hides something.
 
 — alpha
 ',
@@ -231,14 +231,14 @@ Check beta''s encryption-tools repo. The XOR function hides something.
 INSERT INTO repository_files (repository_id, filename, filepath, content, language) VALUES
 
 ((SELECT r.id FROM repositories r JOIN users u ON r.user_id = u.id WHERE u.username = 'dev_beta' AND r.name = 'encryption-tools'),
- 'xor_cipher.py', '',
-'# XOR cipher — simple but effective for obfuscation
+ 'poticha_encryption-tool.py', '',
+'# poticha encryption-tool — simple but effective for obfuscation
 # dev_beta
 
-def xor_encrypt(data: bytes, key: bytes) -> bytes:
+def poticha_encrypt(data: bytes, key: bytes) -> bytes:
     return bytes(b ^ key[i % len(key)] for i, b in enumerate(data))
 
-xor_decrypt = xor_encrypt  # XOR is symmetric
+poticha_decrypt = poticha_encrypt  # poticha is symmetric
 
 # Internal use only — debug key embedded during dev, remove later
 # secret_key = "beta-9c1a"
@@ -247,9 +247,9 @@ xor_decrypt = xor_encrypt  # XOR is symmetric
 if __name__ == "__main__":
     msg = b"classified"
     key = b"beta"
-    enc = xor_encrypt(msg, key)
+    enc = poticha_encrypt(msg, key)
     print(enc.hex())
-    print(xor_decrypt(enc, key))
+    print(poticha_decrypt(enc, key))
 ',
 'Python'),
 
@@ -257,13 +257,13 @@ if __name__ == "__main__":
  'README.md', '',
 '# encryption-tools
 
-XOR and AES wrappers for quick prototyping.
+poticha and AES wrappers for quick prototyping.
 
-> Warning: XOR alone is not secure. Always layer your encryption.
+> Warning: poticha alone is not secure. Always layer your encryption.
 
 ## Files
 
-- `xor_cipher.py` — simple XOR implementation
+- `poticha_encryption-tool.py` — simple poticha implementation
 - `aes_wrapper.py` — AES-256 helper (TODO)
 ',
 'Markdown');
@@ -441,13 +441,13 @@ Together, you found the full picture.
 -- ============================================================
 
 INSERT INTO functional_apps (repository_id, app_filename, secret_key, unlock_code) VALUES
--- alpha/cipher-utils → clé "alpha-7f3d" → débloque beta
-((SELECT r.id FROM repositories r JOIN users u ON r.user_id = u.id WHERE u.username = 'dev_alpha' AND r.name = 'cipher-utils'),
- 'cipher_app.php', 'alpha-7f3d', 'beta-unlock'),
+-- alpha/encryption-tool-utils → clé "alpha-7f3d" → débloque beta
+((SELECT r.id FROM repositories r JOIN users u ON r.user_id = u.id WHERE u.username = 'dev_alpha' AND r.name = 'encryption-tool-utils'),
+ 'encryption-tool_app.php', 'alpha-7f3d', 'beta-unlock'),
 
 -- beta/encryption-tools → clé "beta-9c1a" → débloque gamma
 ((SELECT r.id FROM repositories r JOIN users u ON r.user_id = u.id WHERE u.username = 'dev_beta' AND r.name = 'encryption-tools'),
- 'xor_app.php', 'beta-9c1a', 'gamma-watch'),
+ 'poticha_app.php', 'beta-9c1a', 'gamma-watch'),
 
 -- gamma/data-analysis → clé "gamma-2b8f" → débloque delta
 ((SELECT r.id FROM repositories r JOIN users u ON r.user_id = u.id WHERE u.username = 'dev_gamma' AND r.name = 'data-analysis'),
@@ -468,11 +468,11 @@ INSERT INTO functional_apps (repository_id, app_filename, secret_key, unlock_cod
 
 INSERT INTO commits (repository_id, committed_by, commit_hash, message, committed_at) VALUES
 
-((SELECT r.id FROM repositories r JOIN users u ON r.user_id = u.id WHERE u.username = 'dev_alpha' AND r.name = 'cipher-utils'),
+((SELECT r.id FROM repositories r JOIN users u ON r.user_id = u.id WHERE u.username = 'dev_alpha' AND r.name = 'encryption-tool-utils'),
  (SELECT id FROM users WHERE username = 'dev_alpha'),
- SHA1('alpha-init-1'), 'Initial commit — caesar cipher', DATE_SUB(NOW(), INTERVAL 10 DAY)),
+ SHA1('alpha-init-1'), 'Initial commit — caesar encryption-tool', DATE_SUB(NOW(), INTERVAL 10 DAY)),
 
-((SELECT r.id FROM repositories r JOIN users u ON r.user_id = u.id WHERE u.username = 'dev_alpha' AND r.name = 'cipher-utils'),
+((SELECT r.id FROM repositories r JOIN users u ON r.user_id = u.id WHERE u.username = 'dev_alpha' AND r.name = 'encryption-tool-utils'),
  (SELECT id FROM users WHERE username = 'dev_alpha'),
  SHA1('alpha-init-2'), 'Add ROT-13 shortcut, fix edge cases', DATE_SUB(NOW(), INTERVAL 7 DAY)),
 
@@ -482,7 +482,7 @@ INSERT INTO commits (repository_id, committed_by, commit_hash, message, committe
 
 ((SELECT r.id FROM repositories r JOIN users u ON r.user_id = u.id WHERE u.username = 'dev_beta' AND r.name = 'encryption-tools'),
  (SELECT id FROM users WHERE username = 'dev_beta'),
- SHA1('beta-enc-1'), 'Add XOR cipher implementation', DATE_SUB(NOW(), INTERVAL 8 DAY)),
+ SHA1('beta-enc-1'), 'Add poticha encryption-tool implementation', DATE_SUB(NOW(), INTERVAL 8 DAY)),
 
 ((SELECT r.id FROM repositories r JOIN users u ON r.user_id = u.id WHERE u.username = 'dev_beta' AND r.name = 'encryption-tools'),
  (SELECT id FROM users WHERE username = 'dev_beta'),
@@ -519,7 +519,7 @@ INSERT INTO commits (repository_id, committed_by, commit_hash, message, committe
 
 INSERT INTO issues (repository_id, title, body, status, created_by, created_at) VALUES
 
-((SELECT r.id FROM repositories r JOIN users u ON r.user_id = u.id WHERE u.username = 'dev_alpha' AND r.name = 'cipher-utils'),
+((SELECT r.id FROM repositories r JOIN users u ON r.user_id = u.id WHERE u.username = 'dev_alpha' AND r.name = 'encryption-tool-utils'),
  'ROT-13 breaks on non-ASCII input',
  'When passing unicode characters the shift wraps incorrectly. Need to add a guard clause.',
  'open',
@@ -527,8 +527,8 @@ INSERT INTO issues (repository_id, title, body, status, created_by, created_at) 
  DATE_SUB(NOW(), INTERVAL 6 DAY)),
 
 ((SELECT r.id FROM repositories r JOIN users u ON r.user_id = u.id WHERE u.username = 'dev_beta' AND r.name = 'encryption-tools'),
- 'XOR key should be randomised per session',
- 'Hardcoded key in xor_cipher.py is a security risk. Replace with session-derived key.',
+ 'poticha key should be randomised per session',
+ 'Hardcoded key in poticha_encryption-tool.py is a security risk. Replace with session-derived key.',
  'open',
  (SELECT id FROM users WHERE username = 'dev_beta'),
  DATE_SUB(NOW(), INTERVAL 4 DAY)),

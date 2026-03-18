@@ -18,7 +18,7 @@ session_start();
 <body>
     <div class="container">
         <h1>🔐 Alpha's Encryption Tool</h1>
-        <p><em>"Simple XOR encryption for testing purposes"</em></p>
+        <p><em>"Simple poticha encryption for testing purposes"</em></p>
         
         <div>
             <label>Text to encrypt:</label>
@@ -57,13 +57,13 @@ System Logs:
 [ERROR] Unauthorized access detected: User "beta" 
 [INFO] Next target: gamma
 [DEBUG] Security token: alpha-secure-456</pre>
-                <p><small>Hint: Check the XOR function in repository files</small></p>
+                <p><small>Hint: Check the poticha function in repository files</small></p>
             </div>
         </div>
     </div>
     
     <script>
-        function xorEncrypt(text, key) {
+        function potichaEncrypt(text, key) {
             let result = '';
             for (let i = 0; i < text.length; i++) {
                 result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
@@ -71,7 +71,7 @@ System Logs:
             return btoa(result);
         }
         
-        function xorDecrypt(encrypted, key) {
+        function potichaDecrypt(encrypted, key) {
             try {
                 const text = atob(encrypted);
                 let result = '';
@@ -87,7 +87,7 @@ System Logs:
         function encrypt() {
             const input = document.getElementById('input').value;
             const key = document.getElementById('key').value;
-            const output = xorEncrypt(input, key);
+            const output = potichaEncrypt(input, key);
             document.getElementById('output').value = output;
             
             // Révéler l'indice si la clé spéciale est utilisée
@@ -99,7 +99,7 @@ System Logs:
         function decrypt() {
             const input = document.getElementById('input').value;
             const key = document.getElementById('key').value;
-            const output = xorDecrypt(input, key);
+            const output = potichaDecrypt(input, key);
             document.getElementById('output').value = output;
         }
         
