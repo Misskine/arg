@@ -1,0 +1,42 @@
+<?php
+session_start();
+?>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.5s ease;
+        }
+        
+        .img {
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <img class="img" src="../images/image.png">
+    <img class="img-closed" src="../images/image (1).png" style="display: none;"    >
+    
+    <script>
+
+        setInterval(() => {
+            const img = document.querySelector('.img');
+            const img2 = document.querySelector('.img-closed');
+            img.style.display = 'none';
+            img2.style.display = 'block';
+            setTimeout(() => {
+                img.style.display = 'block';
+                img2.style.display = 'none';
+            }, 300);
+        }, 2000);
+    </script>
+</body>
+</html>
+    
