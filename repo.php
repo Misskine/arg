@@ -327,8 +327,17 @@ $current_user = $stmt->fetch();
                 <div class="commit-item">No commits yet.</div>
             <?php else: ?>
                 <?php foreach ($commits as $commit): ?>
-                    <div class="commit-item">
-                        <strong><?php echo htmlspecialchars($commit['message']); ?></strong><br>
+                    <?php
+                    $easter = '';
+                    if ($commit['message'] === 'Add ROT-13 shortcut, fix edge cases') $easter = 'gravity';
+                    if ($commit['message'] === 'WIP: AES wrapper (not ready)')        $easter = 'cursed';
+                    ?>
+                    <div class="commit-item"
+                         <?php if ($easter === 'gravity'): ?>style="cursor:pointer;" onclick="launchGravity()"<?php endif; ?>
+                         <?php if ($easter === 'cursed'):  ?>style="cursor:pointer;" onclick="openCursed()"<?php endif; ?>>
+                        <strong><?php echo htmlspecialchars($commit['message']); ?></strong>
+                        <?php if ($easter): ?><span style="font-size:10px;color:#888;margin-left:6px;">[click me]</span><?php endif; ?>
+                        <br>
                         <small>
                             <?php echo htmlspecialchars($commit['author_name']); ?> committed
                             <?php echo time_ago($commit['committed_at']); ?>
@@ -440,37 +449,9 @@ $current_user = $stmt->fetch();
 
 <script>
 /* =====================================================
-   TAG DES COMMITS EASTER EGG — détection par texte DOM
-   ===================================================== */
-document.addEventListener('DOMContentLoaded', function(){
-    document.querySelectorAll('.commit-item').forEach(function(item){
-        const msg = item.querySelector('strong');
-        if (!msg) return;
-        const text = msg.textContent.trim();
-        if (text === 'Add ROT-13 shortcut, fix edge cases'){
-            item.dataset.easter = 'gravity';
-            item.style.cursor   = 'pointer';
-            const tag = document.createElement('span');
-            tag.textContent = ' [click me]';
-            tag.style.cssText = 'font-size:10px;color:#888;';
-            msg.appendChild(tag);
-        }
-        if (text === 'WIP: AES wrapper (not ready)'){
-            item.dataset.easter = 'cursed';
-            item.style.cursor   = 'pointer';
-            const tag = document.createElement('span');
-            tag.textContent = ' [click me]';
-            tag.style.cssText = 'font-size:10px;color:#888;';
-            msg.appendChild(tag);
-        }
-    });
-});
-
-/* =====================================================
    GOOGLE GRAVITY — alpha-init-2
    ===================================================== */
-(function(){
-    function launchGravity(){
+function launchGravity(){
         // On rend tout le body en position relative puis on simule la physique
         document.body.style.overflow = 'hidden';
 
@@ -552,19 +533,12 @@ document.addEventListener('DOMContentLoaded', function(){
         const bg = document.createElement('div');
         bg.style.cssText = 'position:fixed;inset:0;z-index:8999;background:#0d1117;';
         document.body.insertBefore(bg, document.body.firstChild);
-    }
-
-    document.addEventListener('click', function(e){
-        const item = e.target.closest('[data-easter="gravity"]');
-        if (item) launchGravity();
-    });
-})();
+}
 
 
 /* =====================================================
    CURSED — beta-enc-2
    ===================================================== */
-(function(){
     const overlay  = document.getElementById('cursed-overlay');
     const textEl   = document.getElementById('cursed-text');
     const slicesEl = document.getElementById('cursed-slices');
@@ -680,13 +654,7 @@ document.addEventListener('DOMContentLoaded', function(){
         try{ overlay._audioSrc && overlay._audioSrc.stop(); overlay._audioCtx && overlay._audioCtx.close(); } catch(e){}
     }
 
-    overlay.addEventListener('click', closeCursed);
-
-    document.addEventListener('click', function(e){
-        const item = e.target.closest('[data-easter="cursed"]');
-        if (item) openCursed();
-    });
-})();
+    if (overlay) overlay.addEventListener('click', closeCursed);
 </script>
 </body>
 </html>
