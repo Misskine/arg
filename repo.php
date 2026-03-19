@@ -327,16 +327,8 @@ $current_user = $stmt->fetch();
                 <div class="commit-item">No commits yet.</div>
             <?php else: ?>
                 <?php foreach ($commits as $commit): ?>
-                    <?php
-                    $easter = '';
-                    if ($commit['message'] === 'Add ROT-13 shortcut, fix edge cases') $easter = 'gravity';
-                    if ($commit['message'] === 'WIP: AES wrapper (not ready)')         $easter = 'cursed';
-                    ?>
-                    <div class="commit-item<?php echo $easter ? ' commit-easter' : ''; ?>"
-                         <?php echo $easter ? 'data-easter="'.$easter.'" style="cursor:pointer;"' : ''; ?>>
-                        <strong><?php echo htmlspecialchars($commit['message']); ?></strong>
-                        <?php if ($easter): ?><span style="font-size:10px;color:#888;margin-left:6px;">[click me]</span><?php endif; ?>
-                        <br>
+                    <div class="commit-item">
+                        <strong><?php echo htmlspecialchars($commit['message']); ?></strong><br>
                         <small>
                             <?php echo htmlspecialchars($commit['author_name']); ?> committed
                             <?php echo time_ago($commit['committed_at']); ?>
@@ -447,6 +439,33 @@ $current_user = $stmt->fetch();
 </style>
 
 <script>
+/* =====================================================
+   TAG DES COMMITS EASTER EGG — détection par texte DOM
+   ===================================================== */
+document.addEventListener('DOMContentLoaded', function(){
+    document.querySelectorAll('.commit-item').forEach(function(item){
+        const msg = item.querySelector('strong');
+        if (!msg) return;
+        const text = msg.textContent.trim();
+        if (text === 'Add ROT-13 shortcut, fix edge cases'){
+            item.dataset.easter = 'gravity';
+            item.style.cursor   = 'pointer';
+            const tag = document.createElement('span');
+            tag.textContent = ' [click me]';
+            tag.style.cssText = 'font-size:10px;color:#888;';
+            msg.appendChild(tag);
+        }
+        if (text === 'WIP: AES wrapper (not ready)'){
+            item.dataset.easter = 'cursed';
+            item.style.cursor   = 'pointer';
+            const tag = document.createElement('span');
+            tag.textContent = ' [click me]';
+            tag.style.cssText = 'font-size:10px;color:#888;';
+            msg.appendChild(tag);
+        }
+    });
+});
+
 /* =====================================================
    GOOGLE GRAVITY — alpha-init-2
    ===================================================== */
